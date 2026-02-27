@@ -1,1 +1,62 @@
-/* You can add global styles to this file, and also import other style files */
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+:root {
+  --bidly-bg: #0b0f14;
+  --bidly-surface: #121923;
+  --bidly-surface-2: #0f1620;
+  --bidly-text: #e6edf3;
+  --bidly-muted: #9aa7b2;
+
+  --bidly-accent: #39ff88;
+  --bidly-accent-2: #00e5ff;
+  --bidly-danger: #ff4d4f;
+
+  --bidly-border: rgba(255, 255, 255, 0.08);
+}
+
+html, body {
+  height: 100%;
+  background: var(--bidly-bg);
+  color: var(--bidly-text);
+}
+
+a { color: var(--bidly-accent); }
+a:hover { color: #7dffb3; }
+
+.bidly-card {
+  background: var(--bidly-surface);
+  border: 1px solid var(--bidly-border);
+  border-radius: 14px;
+}
+
+.bidly-input {
+  background: var(--bidly-surface-2);
+  border: 1px solid var(--bidly-border);
+  color: var(--bidly-text);
+}
+
+.bidly-input:focus {
+  border-color: color-mix(in srgb, var(--bidly-accent) 65%, transparent);
+  box-shadow: 0 0 0 .2rem rgba(57, 255, 136, 0.15);
+}
+
+.btn-bidly {
+  background: var(--bidly-accent);
+  color: #04130a;
+  border: none;
+  font-weight: 600;
+}
+.btn-bidly:hover {
+  background: #66ffad;
+  color: #04130a;
+}
+
+.btn-bidly-outline {
+  border: 1px solid var(--bidly-border);
+  color: var(--bidly-text);
+  background: transparent;
+}
+.btn-bidly-outline:hover {
+  border-color: rgba(57,255,136,0.35);
+  color: var(--bidly-accent);
+}
