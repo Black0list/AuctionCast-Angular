@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../models/api-response.model';
 import {LoginRequest, LoginResponse, RegisterRequest, UserMe} from '../models/auth.models';
+import {UpdateProfileRequest} from '../models/profile.models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthApiService {
@@ -25,6 +26,20 @@ export class AuthApiService {
   me() {
     return this.http.get<ApiResponse<UserMe>>(
       `${environment.apiUrl}/user-service/auth/users/me`
+    );
+  }
+
+  updateMe(req: UpdateProfileRequest) {
+    const form = new FormData();
+
+    if (req.firstName !== undefined) form.append('firstName', req.firstName);
+    if (req.lastName !== undefined) form.append('lastName', req.lastName);
+    if (req.phone !== undefined) form.append('phone', req.phone);
+    if (req.photo) form.append('photo', req.photo);
+
+    return this.http.patch<ApiResponse<UserMe>>(
+      `${environment.apiUrl}/user-service/auth/me`,
+      form
     );
   }
 }
