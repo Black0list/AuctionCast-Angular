@@ -1,0 +1,98 @@
+/* CARD */
+.kick-card {
+  background: #0e0e10;
+  border-radius: 14px;
+  overflow: hidden;
+  transition: all 0.25s ease;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+.kick-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0 25px rgba(0,255,120,0.15);
+}
+
+/* IMAGE */
+.kick-image-wrapper {
+  height: 190px;
+  overflow: hidden;
+}
+
+.kick-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .4s ease;
+}
+
+.kick-card:hover .kick-image {
+  transform: scale(1.05);
+}
+
+/* BODY */
+.kick-body {
+  padding: 18px;
+}
+
+/* TITLE */
+.kick-title {
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+
+/* SELLER */
+.kick-seller {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.kick-badge {
+  color: #00ff7f;
+  font-size: 0.9rem;
+}
+
+/* DESCRIPTION */
+.kick-description {
+  font-size: 0.9rem;
+  color: #b5b5b5;
+  min-height: 45px;
+}
+
+/* TAGS */
+.kick-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+
+.kick-tags span {
+  background: rgba(255,255,255,0.08);
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  border-radius: 20px;
+  color: #d1d5db;
+}
+
+/* BUTTON */
+.kick-btn {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  padding: 9px;
+  border-radius: 8px;
+  background: #00ff7f;
+  color: #000;
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.2s ease;
+}
+
+.kick-btn:hover {
+  background: #00e673;
+}

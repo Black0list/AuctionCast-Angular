@@ -1,10 +1,11 @@
 @import "bootstrap/dist/css/bootstrap.min.css";
+@import "bootstrap-icons/font/bootstrap-icons.css";
 
 :root {
   --bidly-bg: #0b0f14;
   --bidly-surface: #121923;
   --bidly-surface-2: #0f1620;
-  --bidly-text: #e6edf3;
+  --bidly-text: #ffffff;
   --bidly-muted: #9aa7b2;
 
   --bidly-accent: #39ff88;
@@ -14,16 +15,23 @@
   --bidly-border: rgba(255, 255, 255, 0.08);
 }
 
-html, body {
+html,
+body {
   height: 100%;
   background: var(--bidly-bg);
   color: var(--bidly-text);
 }
 
-a { color: var(--bidly-accent); }
-a:hover { color: #7dffb3; }
+a {
+  color: var(--bidly-accent);
+}
+
+a:hover {
+  color: #7dffb3;
+}
 
 .bidly-card {
+  color: var(--bidly-text);
   background: var(--bidly-surface);
   border: 1px solid var(--bidly-border);
   border-radius: 14px;
@@ -46,6 +54,7 @@ a:hover { color: #7dffb3; }
   border: none;
   font-weight: 600;
 }
+
 .btn-bidly:hover {
   background: #66ffad;
   color: #04130a;
@@ -56,7 +65,12 @@ a:hover { color: #7dffb3; }
   color: var(--bidly-text);
   background: transparent;
 }
+
 .btn-bidly-outline:hover {
-  border-color: rgba(57,255,136,0.35);
+  border-color: rgba(57, 255, 136, 0.35);
   color: var(--bidly-accent);
+}
+
+.breadcrumb-item+.breadcrumb-item::before {
+  color: var(--bidly-text) !important;
 }

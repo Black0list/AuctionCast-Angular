@@ -1,0 +1,44 @@
+<div class="container py-4"> <div class="d-flex align-items-center justify-content-between mb-3"> <h3 class="mb-0">Active Products</h3> <button class="btn btn-bidly-outline btn-sm" (click)="load()">Reload</button> </div> <div *ngIf="loading" class="text-secondary">Loading…</div> <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+<div class="row g-4" *ngIf="!loading && products.length">
+  <div class="col-12 col-md-6 col-lg-4" *ngFor="let p of products">
+    <div class="kick-card h-100">
+      <div class="kick-image-wrapper">
+        <img
+          *ngIf="coverUrl(p) as url"
+          [src]="url"
+          class="kick-image"
+        />
+      </div>
+
+      <div class="kick-body">
+        <h5 class="kick-title">
+          {{ p.title }}
+        </h5>
+
+        <div class="kick-seller" *ngIf="p.user">
+          {{ p.user.firstName }} {{ p.user.lastName }}
+          <span class="kick-badge">
+            <i class="bi bi-patch-check-fill"></i>
+          </span>
+        </div>
+
+        <p class="kick-description">
+          {{ p.description || 'No description available.' }}
+        </p>
+
+        <div class="kick-tags">
+          <span *ngIf="p.categoryName">{{ p.categoryName }}</span>
+          <span *ngIf="p.condition">{{ p.condition }}</span>
+        </div>
+
+        <a
+          class="kick-btn"
+          [routerLink]="['/app/products', p.id]"
+        >
+          View Product
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
