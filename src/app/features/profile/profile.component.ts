@@ -12,76 +12,13 @@ import { environment } from '../../../environments/environment';
   standalone: true,
   selector: 'app-profile',
   imports: [CommonModule, ReactiveFormsModule],
-  template: `
-    <div class="container py-4">
-      <div class="bidly-card p-4">
-        <div class="d-flex align-items-center justify-content-between">
-          <h3 class="mb-0">My Profile</h3>
-          <button class="btn btn-bidly-outline btn-sm" (click)="load()">Reload</button>
-        </div>
-
-        <hr style="border-color: var(--bidly-border)" />
-
-        <div *ngIf="loading" class="text-secondary">Loading…</div>
-        <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
-
-        <ng-container *ngIf="me">
-          <div class="row g-3 mb-4">
-            <div class="col-md-6">
-              <div class="text-secondary">Email</div>
-              <div class="fw-semibold">{{ me.email }}</div>
-            </div>
-
-            <div class="col-md-6" *ngIf="me.photo || previewUrl">
-              <div class="text-secondary">Profile Photo</div>
-              <img
-                [src]="previewUrl || absoluteUrl(me.photo)"
-                class="img-thumbnail mt-2"
-                style="max-width: 150px; height: auto;"
-              />
-            </div>
-          </div>
-
-          <h5 class="mb-3">Edit profile</h5>
-
-          <form [formGroup]="form" (ngSubmit)="submit()" class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label text-secondary">First name</label>
-              <input class="form-control bidly-input" formControlName="firstName" />
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label text-secondary">Last name</label>
-              <input class="form-control bidly-input" formControlName="lastName" />
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label text-secondary">Phone</label>
-              <input class="form-control bidly-input" formControlName="phone" />
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label text-secondary">Photo</label>
-              <input class="form-control bidly-input" type="file" (change)="onFileChange($event)" />
-            </div>
-
-            <div class="col-12 d-grid">
-              <button class="btn btn-bidly" type="submit" [disabled]="saving">
-                {{ saving ? 'Saving…' : 'Save changes' }}
-              </button>
-            </div>
-
-            <div class="col-12" *ngIf="success" class="alert alert-success mb-0">
-              Profile updated
-            </div>
-          </form>
-        </ng-container>
-      </div>
-    </div>
-  `,
+  templateUrl: './profile.component.html',
+  styleUrl: './profile.component.css',
 })
 export class ProfileComponent {
   private readonly destroyRef = inject(DestroyRef);
+
+  apiUrl = environment.apiUrl;
 
   loading = false;
   saving = false;
@@ -100,16 +37,6 @@ export class ProfileComponent {
 
   constructor(private readonly auth: AuthService) {
     this.load();
-  }
-
-  absoluteUrl(pathOrUrl?: string | null): string | null {
-    if (!pathOrUrl) return null;
-    if (/^https?:\/\//i.test(pathOrUrl)) return pathOrUrl;
-
-    const base = environment.apiUrl.replace(/\/+$/, '');
-    const path = pathOrUrl.startsWith('/') ? pathOrUrl : `/${pathOrUrl}`;
-
-    return `${base}${path}`;
   }
 
   load(): void {
