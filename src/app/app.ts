@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, Router } from '@angular/router';
 import { NavbarComponent } from './core/components/navbar/navbar';
 import { ToastComponent } from './shared/components/toast/toast';
 
@@ -10,8 +10,14 @@ import { ToastComponent } from './shared/components/toast/toast';
   imports: [CommonModule, RouterOutlet, NavbarComponent, ToastComponent],
   template: `
     <app-toast></app-toast>
-    <app-navbar></app-navbar>
+    <app-navbar *ngIf="!isAdminRoute()"></app-navbar>
     <router-outlet></router-outlet>
   `,
 })
-export class App { }
+export class App {
+  constructor(private router: Router) { }
+
+  isAdminRoute(): boolean {
+    return this.router.url.startsWith('/app/admin');
+  }
+}
