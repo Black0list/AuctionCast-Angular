@@ -42,6 +42,20 @@ export const routes: Routes = [
         ]
       },
       {
+        path: 'seller/auctions',
+        canActivate: [SellerGuard],
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./features/seller/auctions/auction-list/auction-list.component').then(m => m.AuctionListComponent)
+          },
+          {
+            path: 'new',
+            loadComponent: () => import('./features/seller/auctions/auction-create/auction-create.component').then(m => m.AuctionCreateComponent)
+          }
+        ]
+      },
+      {
         path: 'admin',
         // TODO: add AdminGuard
         loadComponent: () => import('./features/admin/layout/admin-layout.component').then(m => m.AdminLayoutComponent),

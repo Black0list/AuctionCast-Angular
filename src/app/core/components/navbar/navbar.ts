@@ -18,6 +18,7 @@ import { AuthService } from '../../auth/auth.service';
             <a class="btn btn-bidly-outline btn-sm" routerLink="/app/me">Me</a>
             <a class="btn btn-bidly-outline btn-sm" routerLink="/app/products">Market</a>
             <a class="btn btn-bidly-outline btn-sm" routerLink="/app/seller/products">My Products</a>
+            <a class="btn btn-bidly-outline btn-sm" routerLink="/app/seller/auctions">My Auctions</a>
             <button class="btn btn-bidly-outline btn-sm" (click)="logout()">Logout</button>
           </ng-container>
 
