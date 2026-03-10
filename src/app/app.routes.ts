@@ -54,6 +54,14 @@ export const routes: Routes = [
           {
             path: 'products',
             loadComponent: () => import('./features/admin/products/admin-product-list.component').then(m => m.AdminProductListComponent)
+          },
+          {
+            path: 'applications',
+            loadComponent: () => import('./features/admin/applications/admin-application-list.component').then(m => m.AdminApplicationListComponent)
+          },
+          {
+            path: 'users',
+            loadComponent: () => import('./features/admin/users/admin-user-list.component').then(m => m.AdminUserListComponent)
           }
         ]
       }

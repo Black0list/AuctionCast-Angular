@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { CatalogService } from '../../../core/services/catalog.service';
 import { ProductResponseDTO } from '../../../core/models/catalog.models';
 import { ToastService } from '../../../core/services/toast.service';
+import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
 
 @Component({
     selector: 'app-admin-product-list',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, MediaUrlPipe],
     template: `
     <div class="admin-products-container">
       <div class="d-flex justify-content-between align-items-center mb-4">
@@ -37,7 +38,7 @@ import { ToastService } from '../../../core/services/toast.service';
               <tr *ngFor="let product of filteredProducts">
                 <td class="ps-4 py-3">
                   <div class="d-flex align-items-center gap-3">
-                    <img [src]="getCoverImage(product)" class="product-thumb" alt="thumb">
+                    <img [src]="getCoverImage(product) | mediaUrl" class="product-thumb" alt="thumb">
                     <div>
                       <div class="fw-bold">{{ product.title }}</div>
                       <div class="text-secondary x-small">ID: {{ product.id.substring(0, 8) }}...</div>
