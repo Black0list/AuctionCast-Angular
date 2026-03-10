@@ -3,16 +3,17 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { CatalogService } from '../../../core/services/catalog.service';
 import { AuthService } from '../../../core/auth/auth.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { ProductResponseDTO } from '../../../core/models/catalog.models';
 import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
 import { finalize, switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 
 @Component({
-    selector: 'app-product-details',
-    standalone: true,
-    imports: [CommonModule, RouterLink, MediaUrlPipe],
-    template: `
+  selector: 'app-product-details',
+  standalone: true,
+  imports: [CommonModule, RouterLink, MediaUrlPipe],
+  template: `
     <div class="container py-5">
       <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
@@ -77,7 +78,7 @@ import { of } from 'rxjs';
           </div>
 
           <div class="actions-container d-grid gap-3 pt-4 border-top border-bidly-muted">
-            <button class="btn btn-bidly btn-lg py-3">Place Bid (Coming Soon)</button>
+            <button class="btn btn-bidly btn-lg py-3" (click)="toast.info('Bidding system is coming soon!')">Place Bid (Coming Soon)</button>
             <div *ngIf="isOwner" class="d-flex gap-2">
                <a [routerLink]="['/app/seller/products', product.id, 'edit']" class="btn btn-bidly-outline flex-fill py-2">Edit My Product</a>
             </div>
@@ -93,7 +94,7 @@ import { of } from 'rxjs';
       </div>
     </div>
   `,
-    styles: [`
+  styles: [`
     .thumbnail-item {
       transition: all 0.2s ease;
       opacity: 0.5;
@@ -112,68 +113,69 @@ import { of } from 'rxjs';
   `]
 })
 export class ProductDetailsComponent {
-    private route = inject(ActivatedRoute);
-    private catalogService = inject(CatalogService);
-    private authService = inject(AuthService);
-    private mediaUrlPipe = new MediaUrlPipe();
+  private route = inject(ActivatedRoute);
+  private catalogService = inject(CatalogService);
+  private authService = inject(AuthService);
+  private mediaUrlPipe = new MediaUrlPipe();
+  public toast = inject(ToastService);
 
-    product?: ProductResponseDTO;
-    loading = true;
-    error: string | null = null;
-    isOwner = false;
-    selectedImage?: string;
+  product?: ProductResponseDTO;
+  loading = true;
+  error: string | null = null;
+  isOwner = false;
+  selectedImage?: string;
 
-    ngOnInit() {
-        const id = this.route.snapshot.paramMap.get('id');
-        if (id) {
-            this.loadProduct(id);
-        } else {
-            this.error = 'Product not found';
-            this.loading = false;
-        }
+  ngOnInit() {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.loadProduct(id);
+    } else {
+      this.error = 'Product not found';
+      this.loading = false;
     }
+  }
 
-    loadProduct(id: string) {
-        this.catalogService.getProduct(id).pipe(
-            switchMap(p => {
-                this.product = p;
-                return this.authService.me().pipe(
-                    switchMap(user => this.catalogService.checkOwnership(id, user.id)),
-                    catchError(() => of(false))
-                );
-            }),
-            finalize(() => this.loading = false)
-        ).subscribe({
-            next: isOwner => this.isOwner = isOwner,
-            error: () => this.error = 'Failed to load product details'
-        });
-    }
+  loadProduct(id: string) {
+    this.catalogService.getProduct(id).pipe(
+      switchMap(p => {
+        this.product = p;
+        return this.authService.me().pipe(
+          switchMap(user => this.catalogService.checkOwnership(id, user.id)),
+          catchError(() => of(false))
+        );
+      }),
+      finalize(() => this.loading = false)
+    ).subscribe({
+      next: isOwner => this.isOwner = isOwner,
+      error: (e) => this.toast.error(e?.error?.message ?? 'Failed to load product details')
+    });
+  }
 
-    selectImage(url: string) {
-        this.selectedImage = this.transformUrl(url);
-    }
+  selectImage(url: string) {
+    this.selectedImage = this.transformUrl(url);
+  }
 
-    transformUrl(url: string): string {
-        return this.mediaUrlPipe.transform(url);
-    }
+  transformUrl(url: string): string {
+    return this.mediaUrlPipe.transform(url);
+  }
 
-    getCoverImage(product: ProductResponseDTO): string {
-        const cover = product.imageUrls?.find(img => img.cover);
-        return cover ? cover.imageUrl : (product.imageUrls?.[0]?.imageUrl || '');
-    }
+  getCoverImage(product: ProductResponseDTO): string {
+    const cover = product.imageUrls?.find(img => img.cover);
+    return cover ? cover.imageUrl : (product.imageUrls?.[0]?.imageUrl || '');
+  }
 
-    getStatusClass(status: string | undefined): string {
-        switch (status?.toUpperCase()) {
-            case 'ACTIVE': return 'bg-success';
-            case 'DRAFT': return 'bg-secondary';
-            case 'IN_AUCTION': return 'bg-primary';
-            case 'SOLD': return 'bg-danger';
-            case 'UNSOLD': return 'bg-warning text-dark';
-            case 'ARCHIVED': return 'bg-dark border border-secondary';
-            default: return 'bg-info';
-        }
+  getStatusClass(status: string | undefined): string {
+    switch (status?.toUpperCase()) {
+      case 'ACTIVE': return 'bg-success';
+      case 'DRAFT': return 'bg-secondary';
+      case 'IN_AUCTION': return 'bg-primary';
+      case 'SOLD': return 'bg-danger';
+      case 'UNSOLD': return 'bg-warning text-dark';
+      case 'ARCHIVED': return 'bg-dark border border-secondary';
+      default: return 'bg-info';
     }
+  }
 
-    onDelete(id: string) {
-    }
+  onDelete(id: string) {
+  }
 }

@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import {AuthService} from '../../../core/auth/auth.service';
+import { AuthService } from '../../../core/auth/auth.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   standalone: true,
@@ -34,7 +35,7 @@ import {AuthService} from '../../../core/auth/auth.service';
             <label class="form-label text-secondary">Password</label>
             <input class="form-control bidly-input" type="password" formControlName="password" />
             <div class="form-text text-secondary">
-              Minimum 6 characters (or whatever your Keycloak policy is).
+              Minimum 6 characters.
             </div>
           </div>
 
@@ -44,16 +45,10 @@ import {AuthService} from '../../../core/auth/auth.service';
             </button>
           </div>
 
-          <div class="col-12">
-            <a routerLink="/login">Already have an account? Sign in</a>
-          </div>
-
-          <div class="col-12" *ngIf="success" class="alert alert-success">
-            Account created. You can login now.
-          </div>
-
-          <div class="col-12" *ngIf="error" class="alert alert-danger">
-            {{ error }}
+          <div class="col-12 text-center mt-3">
+            <p class="mb-0">
+              <a routerLink="/login" class="text-decoration-none text-info">Already have an account? Sign in</a>
+            </p>
           </div>
         </form>
       </div>
@@ -62,8 +57,6 @@ import {AuthService} from '../../../core/auth/auth.service';
 })
 export class RegisterComponent {
   loading = false;
-  error: string | null = null;
-  success = false;
 
   form = new FormGroup({
     firstName: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
@@ -72,25 +65,27 @@ export class RegisterComponent {
     password: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.minLength(6)] }),
   });
 
-  constructor(private readonly auth: AuthService, private readonly router: Router) {}
+  constructor(
+    private readonly auth: AuthService,
+    private readonly router: Router,
+    private readonly toast: ToastService
+  ) { }
 
   submit(): void {
     if (this.form.invalid) return;
 
     this.loading = true;
-    this.error = null;
-    this.success = false;
 
     this.auth.register(this.form.getRawValue()).subscribe({
       next: () => {
         this.loading = false;
-        this.success = true;
-
-        setTimeout(() => this.router.navigateByUrl('/login'), 800);
+        this.toast.success('Account created successfully!');
+        this.router.navigateByUrl('/login');
       },
       error: (e) => {
         this.loading = false;
-        this.error = e?.error?.message ?? 'Register failed';
+        const errMsg = e?.error?.message ?? e?.error?.error ?? 'Registration failed';
+        this.toast.error(errMsg);
       },
     });
   }

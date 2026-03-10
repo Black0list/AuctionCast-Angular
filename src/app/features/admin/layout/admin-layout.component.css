@@ -1,0 +1,189 @@
+.admin-wrapper {
+  display: flex;
+  min-height: 100vh;
+  background: #080a0d;
+  color: #fff;
+  overflow: hidden;
+}
+
+/* Sidebar Styling */
+.admin-sidebar {
+  width: 260px;
+  background: #0f1620;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 100;
+}
+
+.admin-wrapper.collapsed .admin-sidebar {
+  width: 80px;
+}
+
+.sidebar-header {
+  height: 70px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.logo-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  background: var(--bidly-accent);
+  color: #000;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.logo-text {
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -0.5px;
+}
+
+.toggle-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  padding: 8px;
+  transition: color 0.2s;
+}
+
+.toggle-btn:hover {
+  color: var(--bidly-accent);
+}
+
+/* Navigation */
+.sidebar-nav {
+  padding: 20px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  transition: all 0.2s;
+  white-space: nowrap;
+  gap: 16px;
+}
+
+.nav-item i {
+  font-size: 18px;
+  width: 20px;
+  text-align: center;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.03);
+  color: #fff;
+}
+
+.nav-item.active {
+  background: rgba(57, 255, 136, 0.1);
+  color: var(--bidly-accent);
+  font-weight: 600;
+}
+
+.nav-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.05);
+  margin: 12px 16px;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.back-btn {
+  margin-top: auto;
+  color: rgba(239, 68, 68, 0.7);
+}
+
+.back-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+/* Main Content Area */
+.admin-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  position: relative;
+}
+
+.admin-header {
+  height: 70px;
+  background: rgba(8, 10, 13, 0.8);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 90;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #333;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-content {
+  flex: 1;
+}
+
+/* Transition for labels */
+.nav-label {
+  transition: opacity 0.2s;
+}
+
+.admin-wrapper.collapsed .nav-item {
+  justify-content: center;
+  padding: 12px 0;
+  gap: 0;
+}
+
+/* Dropdown Menu Styling */
+.dropdown-item {
+  transition: all 0.2s;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: rgba(57, 255, 136, 0.1) !important;
+  color: var(--bidly-accent) !important;
+}
+
+.dropdown-item.text-danger:hover,
+.dropdown-item.text-danger:focus {
+  background-color: rgba(239, 68, 68, 0.1) !important;
+  color: #ef4444 !important;
+}

@@ -8,7 +8,6 @@
     <hr style="border-color: var(--bidly-border)" />
 
     <div *ngIf="loading" class="text-secondary">Loading…</div>
-    <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
 
     <ng-container *ngIf="me">
       <div class="row g-3 mb-4">
@@ -55,11 +54,35 @@
             {{ saving ? 'Saving…' : 'Save changes' }}
           </button>
         </div>
-
-        <div class="col-12" *ngIf="success" class="alert alert-success mb-0">
-          Profile updated
-        </div>
       </form>
+
+      <div class="mt-5 p-4 rounded-4 border border-green bg-opacity-10">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <h5 class="mb-1">Seller Account</h5>
+            <p class="text-secondary small mb-0">
+              Current status:
+              <span class="badge" [ngClass]="{
+                'bg-secondary': me.sellerStatus === 'NONE',
+                'bg-warning text-dark': me.sellerStatus === 'PENDING',
+                'bg-success': me.sellerStatus === 'APPROVED',
+                'bg-danger': me.sellerStatus === 'REJECTED'
+              }">{{ me.sellerStatus }}</span>
+            </p>
+          </div>
+
+          <button
+            *ngIf="me.sellerStatus === 'NONE' || me.sellerStatus === 'REJECTED'"
+            class="btn btn-info btn-sm"
+            (click)="applyToSeller()">
+            Apply to be Seller
+          </button>
+
+          <div *ngIf="me.sellerStatus === 'APPROVED'" class="text-success fw-bold">
+            <i class="fas fa-check-circle me-1"></i> You are a Seller
+          </div>
+        </div>
+      </div>
     </ng-container>
   </div>
 </div>

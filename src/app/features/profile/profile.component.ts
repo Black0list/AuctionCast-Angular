@@ -7,6 +7,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../core/auth/auth.service';
 import { UserMe } from '../../core/models/auth.models';
 import { environment } from '../../../environments/environment';
+import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   standalone: true,
@@ -17,13 +18,12 @@ import { environment } from '../../../environments/environment';
 })
 export class ProfileComponent {
   private readonly destroyRef = inject(DestroyRef);
+  private readonly toast = inject(ToastService);
 
   apiUrl = environment.apiUrl;
 
   loading = false;
   saving = false;
-  success = false;
-  error: string | null = null;
 
   me: UserMe | null = null;
   selectedPhoto: File | null = null;
@@ -41,8 +41,6 @@ export class ProfileComponent {
 
   load(): void {
     this.loading = true;
-    this.error = null;
-    this.success = false;
 
     this.auth
       .me()
@@ -56,7 +54,7 @@ export class ProfileComponent {
           });
         }),
         catchError((e) => {
-          this.error = e?.error?.message ?? 'Failed to load profile';
+          this.toast.error(e?.error?.message ?? 'Failed to load profile');
           return of(null);
         }),
         takeUntilDestroyed(this.destroyRef)
@@ -83,8 +81,6 @@ export class ProfileComponent {
     if (!this.me) return;
 
     this.saving = true;
-    this.success = false;
-    this.error = null;
 
     const v = this.form.getRawValue();
 
@@ -98,15 +94,29 @@ export class ProfileComponent {
       .subscribe({
         next: (updated) => {
           this.saving = false;
-          this.success = true;
+          this.toast.success('Profile updated successfully');
           this.me = updated;
           this.selectedPhoto = null;
           this.previewUrl = null;
         },
         error: (e) => {
           this.saving = false;
-          this.error = e?.error?.message ?? 'Update failed';
+          this.toast.error(e?.error?.message ?? 'Update failed');
         },
       });
+  }
+
+  applyToSeller(): void {
+    if (!this.me) return;
+
+    this.auth.applySeller().subscribe({
+      next: () => {
+        this.toast.success('Seller application submitted successfully!');
+        this.load();
+      },
+      error: (e) => {
+        this.toast.error(e?.error?.message ?? 'Failed to apply');
+      },
+    });
   }
 }

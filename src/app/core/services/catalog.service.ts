@@ -7,6 +7,10 @@ import { CatalogApiService } from './catalog-api.service';
 export class CatalogService {
   constructor(private readonly api: CatalogApiService) { }
 
+  listAllProducts(): Observable<ProductResponseDTO[]> {
+    return this.api.getProducts().pipe(map((res) => res.data));
+  }
+
   listActiveProducts(): Observable<ProductResponseDTO[]> {
     return this.api.getActiveProducts().pipe(map((res) => res.data));
   }

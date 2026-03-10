@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { CatalogService } from '../../../../core/services/catalog.service';
+import { ToastService } from '../../../../core/services/toast.service';
 import { finalize } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-product-create',
-    standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, RouterLink],
-    template: `
+  selector: 'app-product-create',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  template: `
     <div class="container py-4">
       <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
@@ -80,7 +81,7 @@ import { finalize } from 'rxjs/operators';
       </div>
     </div>
   `,
-    styles: [`
+  styles: [`
     .max-w-700 { max-width: 700px; }
     .text-bidly-accent { color: var(--bidly-accent); font-size: 0.9rem; }
     .bg-bidly-surface { background-color: var(--bidly-surface); }
@@ -89,65 +90,69 @@ import { finalize } from 'rxjs/operators';
   `]
 })
 export class ProductCreateComponent {
-    private fb = inject(FormBuilder);
-    private catalogService = inject(CatalogService);
-    private router = inject(Router);
+  private fb = inject(FormBuilder);
+  private catalogService = inject(CatalogService);
+  private router = inject(Router);
+  private toast = inject(ToastService);
 
-    productForm = this.fb.group({
-        title: ['', [Validators.required, Validators.minLength(3)]],
-        description: [''],
-        categoryName: ['', Validators.required],
-        condition: ['NEW', Validators.required]
-    });
+  productForm = this.fb.group({
+    title: ['', [Validators.required, Validators.minLength(3)]],
+    description: [''],
+    categoryName: ['', Validators.required],
+    condition: ['NEW', Validators.required]
+  });
 
-    categories: any[] = [];
-    selectedFiles: File[] = [];
-    previews: string[] = [];
-    loading = false;
-    submitted = false;
+  categories: any[] = [];
+  selectedFiles: File[] = [];
+  previews: string[] = [];
+  loading = false;
+  submitted = false;
 
-    ngOnInit() {
-        this.catalogService.getActiveCategories().subscribe(cats => this.categories = cats);
+  ngOnInit() {
+    this.catalogService.getActiveCategories().subscribe(cats => this.categories = cats);
+  }
+
+  onFileChange(event: any) {
+    const files = event.target.files;
+    if (files) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        this.selectedFiles.push(file);
+        const reader = new FileReader();
+        reader.onload = (e: any) => this.previews.push(e.target.result);
+        reader.readAsDataURL(file);
+      }
     }
+  }
 
-    onFileChange(event: any) {
-        const files = event.target.files;
-        if (files) {
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                this.selectedFiles.push(file);
-                const reader = new FileReader();
-                reader.onload = (e: any) => this.previews.push(e.target.result);
-                reader.readAsDataURL(file);
-            }
-        }
-    }
+  removeFile(index: number) {
+    this.selectedFiles.splice(index, 1);
+    this.previews.splice(index, 1);
+  }
 
-    removeFile(index: number) {
-        this.selectedFiles.splice(index, 1);
-        this.previews.splice(index, 1);
-    }
+  onSubmit() {
+    this.submitted = true;
+    if (this.productForm.invalid || this.selectedFiles.length === 0) return;
 
-    onSubmit() {
-        this.submitted = true;
-        if (this.productForm.invalid || this.selectedFiles.length === 0) return;
+    this.loading = true;
+    const formData = new FormData();
+    const val = this.productForm.value;
 
-        this.loading = true;
-        const formData = new FormData();
-        const val = this.productForm.value;
+    formData.append('title', val.title!);
+    formData.append('description', val.description || '');
+    formData.append('categoryName', val.categoryName!);
+    formData.append('condition', val.condition!);
 
-        formData.append('title', val.title!);
-        formData.append('description', val.description || '');
-        formData.append('categoryName', val.categoryName!);
-        formData.append('condition', val.condition!);
+    this.selectedFiles.forEach(file => formData.append('images', file));
 
-        this.selectedFiles.forEach(file => formData.append('images', file));
-
-        this.catalogService.createProduct(formData)
-            .pipe(finalize(() => this.loading = false))
-            .subscribe({
-                next: () => this.router.navigate(['/app/seller/products']),
-                error: () => alert('Failed to create product')
-            });
-    }
+    this.catalogService.createProduct(formData)
+      .pipe(finalize(() => this.loading = false))
+      .subscribe({
+        next: () => {
+          this.toast.success('Product created successfully');
+          this.router.navigate(['/app/seller/products']);
+        },
+        error: (e) => this.toast.error(e?.error?.message ?? 'Failed to create product')
+      });
+  }
 }
