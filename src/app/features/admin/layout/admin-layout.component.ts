@@ -28,9 +28,9 @@ import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
             <i class="fas fa-th-large"></i>
             <span class="nav-label" *ngIf="!isCollapsed">Dashboard</span>
           </a>
-          
+
           <div class="nav-divider"></div>
-          
+
           <a routerLink="/app/admin/products" routerLinkActive="active" class="nav-item" title="Products">
             <i class="fas fa-box"></i>
             <span class="nav-label" *ngIf="!isCollapsed">Inventory</span>
@@ -40,12 +40,12 @@ import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
             <i class="fas fa-id-card"></i>
             <span class="nav-label" *ngIf="!isCollapsed">Applications</span>
           </a>
-          
+
           <a routerLink="/app/admin/users" routerLinkActive="active" class="nav-item" title="Users">
             <i class="fas fa-user-shield"></i>
             <span class="nav-label" *ngIf="!isCollapsed">Users</span>
           </a>
-          
+
           <a routerLink="/app/admin/auctions" routerLinkActive="active" class="nav-item" title="Auctions">
             <i class="fas fa-hammer"></i>
             <span class="nav-label" *ngIf="!isCollapsed">Auctions</span>
@@ -69,15 +69,15 @@ import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
           <div class="user-meta d-flex align-items-center gap-2">
             <span class="badge bg-danger rounded-pill">Admin</span>
             <div class="dropdown">
-              <div class="avatar dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+              <div class="avatar dropdown-toggle" role="button" (click)="toggleDropdown()" style="cursor: pointer;">
                 <img *ngIf="adminData?.photo" [src]="adminData!.photo | mediaUrl" alt="Admin" class="rounded-circle shadow-sm" width="36" height="36" style="object-fit: cover;">
                 <div *ngIf="!adminData?.photo" class="bg-secondary rounded-circle d-flex justify-content-center align-items-center shadow-sm" style="width: 36px; height: 36px;">
                   <i class="fas fa-user-shield text-white"></i>
                 </div>
               </div>
-              <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" style="background: var(--bg-card);">
+              <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" [class.show]="isDropdownOpen" style="background: var(--bg-card); position: absolute; right: 0;">
                 <li>
-                  <a class="dropdown-item d-flex align-items-center gap-2 py-2" routerLink="/app/profile" style="color: var(--text-primary);">
+                  <a class="dropdown-item d-flex align-items-center gap-2 py-2 text-white" routerLink="/app/me" (click)="isDropdownOpen = false">
                     <i class="fas fa-user-circle"></i> Profile
                   </a>
                 </li>
@@ -102,6 +102,7 @@ import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
 })
 export class AdminLayoutComponent implements OnInit {
   isCollapsed = false;
+  isDropdownOpen = false;
   adminData?: UserMe;
 
   constructor(private authService: AuthService) { }
@@ -116,6 +117,10 @@ export class AdminLayoutComponent implements OnInit {
 
   toggleSidebar() {
     this.isCollapsed = !this.isCollapsed;
+  }
+
+  toggleDropdown() {
+    this.isDropdownOpen = !this.isDropdownOpen;
   }
 
   logout() {

@@ -170,3 +170,20 @@
   padding: 12px 0;
   gap: 0;
 }
+
+/* Dropdown Menu Styling */
+.dropdown-item {
+  transition: all 0.2s;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: rgba(57, 255, 136, 0.1) !important;
+  color: var(--bidly-accent) !important;
+}
+
+.dropdown-item.text-danger:hover,
+.dropdown-item.text-danger:focus {
+  background-color: rgba(239, 68, 68, 0.1) !important;
+  color: #ef4444 !important;
+}
