@@ -1,18 +1,20 @@
 import { Injectable } from '@angular/core';
 import { map, Observable, tap } from 'rxjs';
 import { AuthApiService } from './auth-api.service';
-import {LoginRequest, RegisterRequest, UserMe} from '../models/auth.models';
+import { LoginRequest, RegisterRequest, UserMe } from '../models/auth.models';
 import { TokenStorageService } from './token-storage.service';
-import {UpdateProfileRequest} from '../models/profile.models';
-import {Router} from '@angular/router';
+import { UpdateProfileRequest } from '../models/profile.models';
+import { Router } from '@angular/router';
+import { ToastService } from '../services/toast.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   constructor(
     private readonly api: AuthApiService,
     private readonly tokenStorage: TokenStorageService,
-    private router : Router
-  ) {}
+    private readonly router: Router,
+    private readonly toast: ToastService
+  ) { }
 
   login(body: LoginRequest): Observable<void> {
     return this.api.login(body).pipe(
@@ -34,8 +36,13 @@ export class AuthService {
     return this.api.updateMe(req).pipe(map((res) => res.data));
   }
 
+  applySeller(): Observable<void> {
+    return this.api.applySeller().pipe(map(() => void 0));
+  }
+
   logout(): void {
     this.tokenStorage.clear();
+    this.toast.info('You have been logged out');
     this.router.navigate(['/login']);
   }
 

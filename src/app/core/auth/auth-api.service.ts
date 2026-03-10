@@ -2,12 +2,12 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../models/api-response.model';
-import {LoginRequest, LoginResponse, RegisterRequest, UserMe} from '../models/auth.models';
-import {UpdateProfileRequest} from '../models/profile.models';
+import { LoginRequest, LoginResponse, RegisterRequest, UserMe } from '../models/auth.models';
+import { UpdateProfileRequest } from '../models/profile.models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthApiService {
-  constructor(private readonly http: HttpClient) {}
+  constructor(private readonly http: HttpClient) { }
 
   login(body: LoginRequest) {
     return this.http.post<ApiResponse<LoginResponse>>(
@@ -40,6 +40,13 @@ export class AuthApiService {
     return this.http.patch<ApiResponse<UserMe>>(
       `${environment.apiUrl}/user-service/auth/me`,
       form
+    );
+  }
+
+  applySeller() {
+    return this.http.post<ApiResponse<void>>(
+      `${environment.apiUrl}/user-service/users/apply-seller`,
+      {}
     );
   }
 }

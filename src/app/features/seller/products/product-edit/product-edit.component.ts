@@ -3,15 +3,16 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CatalogService } from '../../../../core/services/catalog.service';
+import { ToastService } from '../../../../core/services/toast.service';
 import { MediaUrlPipe } from '../../../../shared/pipes/media-url.pipe';
 import { ProductResponseDTO } from '../../../../core/models/catalog.models';
 import { finalize } from 'rxjs/operators';
 
 @Component({
-    selector: 'app-product-edit',
-    standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, RouterLink, MediaUrlPipe],
-    template: `
+  selector: 'app-product-edit',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, MediaUrlPipe],
+  template: `
     <div class="container py-4">
       <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
@@ -102,7 +103,7 @@ import { finalize } from 'rxjs/operators';
       </div>
     </div>
   `,
-    styles: [`
+  styles: [`
     .max-w-700 { max-width: 700px; }
     .text-bidly-accent { color: var(--bidly-accent); font-size: 0.9rem; }
     .text-bidly-muted { color: var(--bidly-muted); }
@@ -112,93 +113,97 @@ import { finalize } from 'rxjs/operators';
   `]
 })
 export class ProductEditComponent {
-    private fb = inject(FormBuilder);
-    private catalogService = inject(CatalogService);
-    private route = inject(ActivatedRoute);
-    private router = inject(Router);
+  private fb = inject(FormBuilder);
+  private catalogService = inject(CatalogService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private toast = inject(ToastService);
 
-    productForm = this.fb.group({
-        title: ['', [Validators.required, Validators.minLength(3)]],
-        description: [''],
-        categoryName: ['', Validators.required],
-        condition: ['', Validators.required],
-        status: ['', Validators.required],
-        deleted: [false]
-    });
+  productForm = this.fb.group({
+    title: ['', [Validators.required, Validators.minLength(3)]],
+    description: [''],
+    categoryName: ['', Validators.required],
+    condition: ['', Validators.required],
+    status: ['', Validators.required],
+    deleted: [false]
+  });
 
-    product?: ProductResponseDTO;
-    categories: any[] = [];
-    selectedFiles: File[] = [];
-    previews: string[] = [];
-    loading = true;
+  product?: ProductResponseDTO;
+  categories: any[] = [];
+  selectedFiles: File[] = [];
+  previews: string[] = [];
+  loading = true;
 
-    ngOnInit() {
-        const id = this.route.snapshot.paramMap.get('id');
-        if (id) {
-            this.loadData(id);
-        }
+  ngOnInit() {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.loadData(id);
     }
+  }
 
-    loadData(id: string) {
-        this.loading = true;
-        this.catalogService.getActiveCategories().subscribe(cats => this.categories = cats);
-        this.catalogService.getProduct(id)
-            .pipe(finalize(() => this.loading = false))
-            .subscribe({
-                next: p => {
-                    this.product = p;
-                    this.productForm.patchValue({
-                        title: p.title,
-                        description: p.description,
-                        categoryName: p.categoryName,
-                        condition: p.condition,
-                        status: p.status,
-                        deleted: p.deleted || false
-                    });
-                },
-                error: () => this.router.navigate(['/app/seller/products'])
-            });
+  loadData(id: string) {
+    this.loading = true;
+    this.catalogService.getActiveCategories().subscribe(cats => this.categories = cats);
+    this.catalogService.getProduct(id)
+      .pipe(finalize(() => this.loading = false))
+      .subscribe({
+        next: p => {
+          this.product = p;
+          this.productForm.patchValue({
+            title: p.title,
+            description: p.description,
+            categoryName: p.categoryName,
+            condition: p.condition,
+            status: p.status,
+            deleted: p.deleted || false
+          });
+        },
+        error: () => this.router.navigate(['/app/seller/products'])
+      });
+  }
+
+  onFileChange(event: any) {
+    const files = event.target.files;
+    if (files) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        this.selectedFiles.push(file);
+        const reader = new FileReader();
+        reader.onload = (e: any) => this.previews.push(e.target.result);
+        reader.readAsDataURL(file);
+      }
     }
+  }
 
-    onFileChange(event: any) {
-        const files = event.target.files;
-        if (files) {
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                this.selectedFiles.push(file);
-                const reader = new FileReader();
-                reader.onload = (e: any) => this.previews.push(e.target.result);
-                reader.readAsDataURL(file);
-            }
-        }
-    }
+  removeFile(index: number) {
+    this.selectedFiles.splice(index, 1);
+    this.previews.splice(index, 1);
+  }
 
-    removeFile(index: number) {
-        this.selectedFiles.splice(index, 1);
-        this.previews.splice(index, 1);
-    }
+  onSubmit() {
+    if (this.productForm.invalid || !this.product) return;
 
-    onSubmit() {
-        if (this.productForm.invalid || !this.product) return;
+    this.loading = true;
+    const formData = new FormData();
+    const val = this.productForm.value;
 
-        this.loading = true;
-        const formData = new FormData();
-        const val = this.productForm.value;
+    formData.append('title', val.title!);
+    formData.append('description', val.description || '');
+    formData.append('categoryName', val.categoryName!);
+    formData.append('condition', val.condition!);
+    formData.append('status', val.status!);
+    formData.append('deleted', String(val.deleted || false));
 
-        formData.append('title', val.title!);
-        formData.append('description', val.description || '');
-        formData.append('categoryName', val.categoryName!);
-        formData.append('condition', val.condition!);
-        formData.append('status', val.status!);
-        formData.append('deleted', String(val.deleted || false));
+    this.selectedFiles.forEach(file => formData.append('images', file));
 
-        this.selectedFiles.forEach(file => formData.append('images', file));
-
-        this.catalogService.updateProduct(this.product.id, formData)
-            .pipe(finalize(() => this.loading = false))
-            .subscribe({
-                next: () => this.router.navigate(['/app/seller/products'], { queryParams: { success: 'true' } }),
-                error: () => alert('Failed to update product')
-            });
-    }
+    this.catalogService.updateProduct(this.product.id, formData)
+      .pipe(finalize(() => this.loading = false))
+      .subscribe({
+        next: () => {
+          this.toast.success('Product updated successfully');
+          this.router.navigate(['/app/seller/products']);
+        },
+        error: (e) => this.toast.error(e?.error?.message ?? 'Failed to update product')
+      });
+  }
 }

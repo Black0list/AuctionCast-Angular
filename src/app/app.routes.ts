@@ -40,6 +40,18 @@ export const routes: Routes = [
             loadComponent: () => import('./features/seller/products/product-edit/product-edit.component').then(m => m.ProductEditComponent)
           },
         ]
+      },
+      {
+        path: 'admin',
+        // TODO: add AdminGuard
+        loadComponent: () => import('./features/admin/layout/admin-layout.component').then(m => m.AdminLayoutComponent),
+        children: [
+          { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+          {
+            path: 'dashboard',
+            loadComponent: () => import('./features/admin/dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent)
+          }
+        ]
       }
     ],
   },

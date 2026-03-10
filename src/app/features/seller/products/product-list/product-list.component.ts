@@ -2,15 +2,16 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { CatalogService } from '../../../../core/services/catalog.service';
+import { ToastService } from '../../../../core/services/toast.service';
 import { MediaUrlPipe } from '../../../../shared/pipes/media-url.pipe';
 import { ProductResponseDTO } from '../../../../core/models/catalog.models';
 import { finalize } from 'rxjs';
 
 @Component({
-    selector: 'app-product-list',
-    standalone: true,
-    imports: [CommonModule, RouterLink, MediaUrlPipe],
-    template: `
+  selector: 'app-product-list',
+  standalone: true,
+  imports: [CommonModule, RouterLink, MediaUrlPipe],
+  template: `
       <div class="container py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
           <h2 class="h3 mb-0">My Inventory</h2>
@@ -61,7 +62,7 @@ import { finalize } from 'rxjs';
         </div>
       </div>
     `,
-    styles: [`
+  styles: [`
     .text-bidly-accent { color: var(--bidly-accent); }
     .text-bidly-muted { color: var(--bidly-muted); }
     .bg-bidly-surface { background: rgba(255,255,255,0.05); }
@@ -71,48 +72,52 @@ import { finalize } from 'rxjs';
   `]
 })
 export class ProductListComponent {
-    private catalogService = inject(CatalogService);
-    products: ProductResponseDTO[] = [];
-    loading = true;
+  private catalogService = inject(CatalogService);
+  private toast = inject(ToastService);
+  products: ProductResponseDTO[] = [];
+  loading = true;
 
-    ngOnInit() {
-        this.loadProducts();
-    }
+  ngOnInit() {
+    this.loadProducts();
+  }
 
-    loadProducts() {
-        this.loading = true;
-        this.catalogService.listMyProducts()
-            .pipe(finalize(() => this.loading = false))
-            .subscribe({
-                next: products => this.products = products.filter(p => !p.deleted),
-                error: () => alert('Failed to load your products')
-            });
-    }
+  loadProducts() {
+    this.loading = true;
+    this.catalogService.listMyProducts()
+      .pipe(finalize(() => this.loading = false))
+      .subscribe({
+        next: products => this.products = products.filter(p => !p.deleted),
+        error: (e) => this.toast.error(e?.error?.message ?? 'Failed to load your products')
+      });
+  }
 
-    getCoverImage(product: ProductResponseDTO): string {
-        const cover = product.imageUrls?.find(img => img.cover);
-        return cover ? cover.imageUrl : (product.imageUrls?.[0]?.imageUrl || '');
-    }
+  getCoverImage(product: ProductResponseDTO): string {
+    const cover = product.imageUrls?.find(img => img.cover);
+    return cover ? cover.imageUrl : (product.imageUrls?.[0]?.imageUrl || '');
+  }
 
-    getStatusClass(status: string | undefined): string {
-        switch (status?.toUpperCase()) {
-            case 'ACTIVE': return 'bg-success';
-            case 'DRAFT': return 'bg-secondary';
-            case 'IN_AUCTION': return 'bg-primary';
-            case 'SOLD': return 'bg-danger';
-            case 'UNSOLD': return 'bg-warning text-dark';
-            case 'ARCHIVED': return 'bg-dark border border-secondary';
-            default: return 'bg-info';
-        }
+  getStatusClass(status: string | undefined): string {
+    switch (status?.toUpperCase()) {
+      case 'ACTIVE': return 'bg-success';
+      case 'DRAFT': return 'bg-secondary';
+      case 'IN_AUCTION': return 'bg-primary';
+      case 'SOLD': return 'bg-danger';
+      case 'UNSOLD': return 'bg-warning text-dark';
+      case 'ARCHIVED': return 'bg-dark border border-secondary';
+      default: return 'bg-info';
     }
+  }
 
-    onDelete(id: string) {
-        if (confirm('Are you sure you want to delete this product?')) {
-            this.catalogService.deleteProduct(id)
-                .subscribe({
-                    next: () => this.loadProducts(),
-                    error: () => alert('Failed to delete product')
-                });
-        }
+  onDelete(id: string) {
+    if (confirm('Are you sure you want to delete this product?')) {
+      this.catalogService.deleteProduct(id)
+        .subscribe({
+          next: () => {
+            this.toast.success('Product deleted successfully');
+            this.loadProducts();
+          },
+          error: (e) => this.toast.error(e?.error?.message ?? 'Failed to delete product')
+        });
     }
+  }
 }

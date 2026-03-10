@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import {AuthService} from '../../../core/auth/auth.service';
+import { AuthService } from '../../../core/auth/auth.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   standalone: true,
@@ -28,10 +29,6 @@ import {AuthService} from '../../../core/auth/auth.service';
           <button class="btn btn-bidly" type="submit" [disabled]="form.invalid || loading">
             {{ loading ? 'Signing in…' : 'Sign in' }}
           </button>
-
-          <div *ngIf="error" class="alert alert-danger mb-0">
-            {{ error }}
-          </div>
         </form>
       </div>
     </div>
@@ -39,28 +36,32 @@ import {AuthService} from '../../../core/auth/auth.service';
 })
 export class LoginComponent {
   loading = false;
-  error: string | null = null;
 
   form = new FormGroup({
     email: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.email] }),
     password: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
   });
 
-  constructor(private readonly auth: AuthService, private readonly router: Router) {}
+  constructor(
+    private readonly auth: AuthService,
+    private readonly router: Router,
+    private readonly toast: ToastService
+  ) { }
 
   submit(): void {
     if (this.form.invalid) return;
     this.loading = true;
-    this.error = null;
 
     this.auth.login(this.form.getRawValue()).subscribe({
       next: () => {
         this.loading = false;
+        this.toast.success('Signed in successfully');
         this.router.navigateByUrl('/');
       },
       error: (e) => {
         this.loading = false;
-        this.error = e?.error?.message ?? e?.error?.error ?? 'Login failed';
+        const errMsg = e?.error?.message ?? e?.error?.error ?? 'Login failed';
+        this.toast.error(errMsg);
       },
     });
   }

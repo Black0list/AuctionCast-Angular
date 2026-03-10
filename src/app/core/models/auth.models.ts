@@ -24,4 +24,5 @@ export interface UserMe {
   lastName?: string;
   phone?: string;
   photo?: string;
+  sellerStatus: 'NONE' | 'PENDING' | 'APPROVED' | 'REJECTED';
 }
