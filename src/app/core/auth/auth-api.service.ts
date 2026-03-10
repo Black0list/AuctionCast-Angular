@@ -23,6 +23,13 @@ export class AuthApiService {
     );
   }
 
+  refreshToken(token: string) {
+    return this.http.post<ApiResponse<LoginResponse>>(
+      `${environment.apiUrl}/user-service/auth/refresh?refreshToken=${token}`,
+      {}
+    );
+  }
+
   me() {
     return this.http.get<ApiResponse<UserMe>>(
       `${environment.apiUrl}/user-service/auth/users/me`

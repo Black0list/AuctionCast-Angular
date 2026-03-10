@@ -19,7 +19,27 @@ export class AuthService {
   login(body: LoginRequest): Observable<void> {
     return this.api.login(body).pipe(
       map((res) => res.data),
-      tap((data) => this.tokenStorage.setAccessToken(data.accessToken)),
+      tap((data) => {
+        this.tokenStorage.setAccessToken(data.accessToken);
+        this.tokenStorage.setRefreshToken(data.refreshToken);
+      }),
+      map(() => void 0)
+    );
+  }
+
+  refreshToken(): Observable<void> {
+    const refresh = this.tokenStorage.getRefreshToken();
+    if (!refresh) {
+      this.logout();
+      throw new Error('No refresh token available');
+    }
+
+    return this.api.refreshToken(refresh).pipe(
+      map((res) => res.data),
+      tap((data) => {
+        this.tokenStorage.setAccessToken(data.accessToken);
+        this.tokenStorage.setRefreshToken(data.refreshToken);
+      }),
       map(() => void 0)
     );
   }
