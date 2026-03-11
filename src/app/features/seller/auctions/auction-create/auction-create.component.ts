@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { AuctionService } from '../../../../core/services/auction.service';
 import { CatalogService } from '../../../../core/services/catalog.service';
+import { ToastService } from '../../../../core/services/toast.service';
 import { ProductResponseDTO } from '../../../../core/models/catalog.models';
 
 @Component({
@@ -100,6 +101,7 @@ export class AuctionCreateComponent implements OnInit {
         private fb: FormBuilder,
         private auctionService: AuctionService,
         private catalogService: CatalogService,
+        private toastService: ToastService,
         private router: Router
     ) { }
 
@@ -134,6 +136,7 @@ export class AuctionCreateComponent implements OnInit {
             },
             error: (err) => {
                 console.error('Failed to load products', err);
+                this.toastService.error('Failed to load your products. Please try again later.');
             }
         });
     }
@@ -161,10 +164,12 @@ export class AuctionCreateComponent implements OnInit {
 
         this.auctionService.create(requestData).subscribe({
             next: () => {
+                this.toastService.success('Auction created successfully!');
                 this.router.navigate(['/app/seller/auctions']);
             },
             error: (err) => {
                 console.error('Failed to create auction', err);
+                this.toastService.error(err?.error?.message || 'Failed to create auction. Please check your inputs.');
                 this.loading = false;
             }
         });
