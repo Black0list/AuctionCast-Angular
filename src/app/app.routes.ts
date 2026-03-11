@@ -20,6 +20,10 @@ export const routes: Routes = [
       { path: 'me', component: ProfileComponent },
       { path: 'products', component: ProductsActiveComponent },
       {
+        path: 'wallet',
+        loadComponent: () => import('./features/wallet/wallet.component').then(m => m.WalletComponent)
+      },
+      {
         path: 'products/:id',
         loadComponent: () => import('./features/products/product-details/product-details.component').then(m => m.ProductDetailsComponent)
       },
@@ -39,6 +43,20 @@ export const routes: Routes = [
             path: ':id/edit',
             loadComponent: () => import('./features/seller/products/product-edit/product-edit.component').then(m => m.ProductEditComponent)
           },
+        ]
+      },
+      {
+        path: 'seller/auctions',
+        canActivate: [SellerGuard],
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./features/seller/auctions/auction-list/auction-list.component').then(m => m.AuctionListComponent)
+          },
+          {
+            path: 'new',
+            loadComponent: () => import('./features/seller/auctions/auction-create/auction-create.component').then(m => m.AuctionCreateComponent)
+          }
         ]
       },
       {
