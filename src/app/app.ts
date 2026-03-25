@@ -1,39 +1,24 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterOutlet } from '@angular/router';
-import { AuthService } from './core/auth/auth.service';
+import { RouterOutlet, Router } from '@angular/router';
+import { NavbarComponent } from './core/components/navbar/navbar';
+import { ToastComponent } from './shared/components/toast/toast';
 
 @Component({
   standalone: true,
   selector: 'app-root',
-  imports: [CommonModule, RouterOutlet, RouterLink],
+  imports: [CommonModule, RouterOutlet, NavbarComponent, ToastComponent],
   template: `
-    <nav class="navbar navbar-expand-lg" style="border-bottom: 1px solid var(--bidly-border); background: var(--bidly-surface);">
-      <div class="container">
-        <a class="navbar-brand fw-bold" routerLink="/app/home" style="color: var(--bidly-text);">Bidly</a>
-
-        <div class="ms-auto d-flex gap-2 align-items-center">
-          <ng-container *ngIf="auth.isLoggedIn(); else loggedOut">
-            <a class="btn btn-bidly-outline btn-sm" routerLink="/app/home">Home</a>
-            <a class="btn btn-bidly-outline btn-sm" routerLink="/app/me">Me</a>
-            <button class="btn btn-bidly-outline btn-sm" (click)="logout()">Logout</button>
-          </ng-container>
-
-          <ng-template #loggedOut>
-            <a class="btn btn-bidly-outline btn-sm" routerLink="/login">Login</a>
-            <a class="btn btn-bidly btn-sm" routerLink="/register">Register</a>
-          </ng-template>
-        </div>
-      </div>
-    </nav>
-
+    <app-toast></app-toast>
+    <app-navbar *ngIf="shouldShowNavbar()"></app-navbar>
     <router-outlet></router-outlet>
   `,
 })
 export class App {
-  constructor(public readonly auth: AuthService) {}
+  constructor(private router: Router) { }
 
-  logout(): void {
-    this.auth.logout();
+  shouldShowNavbar(): boolean {
+    const url = this.router.url;
+    return !url.includes('/login') && !url.includes('/register') && !url.startsWith('/app/admin');
   }
 }

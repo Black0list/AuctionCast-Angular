@@ -1,10 +1,11 @@
 @import "bootstrap/dist/css/bootstrap.min.css";
+@import "bootstrap-icons/font/bootstrap-icons.css";
 
 :root {
   --bidly-bg: #0b0f14;
   --bidly-surface: #121923;
   --bidly-surface-2: #0f1620;
-  --bidly-text: #e6edf3;
+  --bidly-text: #ffffff;
   --bidly-muted: #9aa7b2;
 
   --bidly-accent: #39ff88;
@@ -14,16 +15,23 @@
   --bidly-border: rgba(255, 255, 255, 0.08);
 }
 
-html, body {
+html,
+body {
   height: 100%;
   background: var(--bidly-bg);
   color: var(--bidly-text);
 }
 
-a { color: var(--bidly-accent); }
-a:hover { color: #7dffb3; }
+a {
+  color: var(--bidly-accent);
+}
+
+a:hover {
+  color: #7dffb3;
+}
 
 .bidly-card {
+  color: var(--bidly-text);
   background: var(--bidly-surface);
   border: 1px solid var(--bidly-border);
   border-radius: 14px;
@@ -41,22 +49,47 @@ a:hover { color: #7dffb3; }
 }
 
 .btn-bidly {
-  background: var(--bidly-accent);
-  color: #04130a;
+  background: linear-gradient(135deg, var(--bidly-accent) 0%, #17b964 100%);
+  color: #041208;
   border: none;
-  font-weight: 600;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 10px 24px;
+  border-radius: 10px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(57, 255, 136, 0.15);
 }
+
 .btn-bidly:hover {
-  background: #66ffad;
-  color: #04130a;
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #4fff9b 0%, var(--bidly-accent) 100%);
+  color: #041208;
+  box-shadow: 0 6px 20px rgba(57, 255, 136, 0.25);
+}
+
+.btn-bidly:active {
+  transform: translateY(0);
 }
 
 .btn-bidly-outline {
-  border: 1px solid var(--bidly-border);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: var(--bidly-text);
-  background: transparent;
+  background: rgba(255, 255, 255, 0.03);
+  font-weight: 600;
+  padding: 10px 24px;
+  border-radius: 10px;
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
 }
+
 .btn-bidly-outline:hover {
-  border-color: rgba(57,255,136,0.35);
+  border-color: var(--bidly-accent);
+  background: rgba(57, 255, 136, 0.05);
   color: var(--bidly-accent);
+  box-shadow: 0 0 15px rgba(57, 255, 136, 0.1);
+}
+
+.breadcrumb-item+.breadcrumb-item::before {
+  color: var(--bidly-text) !important;
 }

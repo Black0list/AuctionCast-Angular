@@ -1,1 +1,123 @@
-<p>profile works!</p>
+<div class="container py-4">
+  <div class="bidly-card p-4">
+    <div class="d-flex align-items-center justify-content-between">
+      <h3 class="mb-0">My Profile</h3>
+      <button class="btn btn-bidly-outline btn-sm" (click)="load()">Reload</button>
+    </div>
+
+    <hr style="border-color: var(--bidly-border)" />
+
+    <div *ngIf="loading" class="text-secondary">Loading…</div>
+
+    <ng-container *ngIf="me">
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <div class="text-secondary">Email</div>
+          <div class="fw-semibold">{{ me.email }}</div>
+        </div>
+
+        <div class="col-md-6" *ngIf="me.photo || previewUrl">
+          <div class="text-secondary">Profile Photo</div>
+          <img
+            [src]="previewUrl || (apiUrl + me.photo)"
+            class="img-thumbnail mt-2"
+            style="max-width: 150px; height: auto;"
+          />
+        </div>
+      </div>
+
+      <h5 class="mb-3">Edit profile</h5>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label text-secondary">First name</label>
+          <input class="form-control bidly-input" formControlName="firstName" />
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label text-secondary">Last name</label>
+          <input class="form-control bidly-input" formControlName="lastName" />
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label text-secondary">Phone</label>
+          <input class="form-control bidly-input" formControlName="phone" />
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label text-secondary">Photo</label>
+          <input class="form-control bidly-input" type="file" (change)="onFileChange($event)" />
+        </div>
+
+        <div class="col-12 mt-4">
+          <h6 class="text-bidly-accent text-uppercase small fw-bold">Shipping Address</h6>
+          <hr class="mt-1 mb-3 opacity-25">
+        </div>
+
+        <div class="col-md-12">
+          <label class="form-label text-secondary">Address Line 1</label>
+          <input class="form-control bidly-input" formControlName="addressLine1" placeholder="Street address, P.O. box, etc." />
+        </div>
+
+        <div class="col-md-12">
+          <label class="form-label text-secondary">Address Line 2 (Optional)</label>
+          <input class="form-control bidly-input" formControlName="addressLine2" placeholder="Apartment, suite, unit, building, floor, etc." />
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label text-secondary">City</label>
+          <input class="form-control bidly-input" formControlName="city" />
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label text-secondary">State / Province</label>
+          <input class="form-control bidly-input" formControlName="state" />
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label text-secondary">Postal / ZIP Code</label>
+          <input class="form-control bidly-input" formControlName="postalCode" />
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label text-secondary">Country</label>
+          <input class="form-control bidly-input" formControlName="country" />
+        </div>
+
+        <div class="col-12 d-grid">
+          <button class="btn btn-bidly" type="submit" [disabled]="saving">
+            {{ saving ? 'Saving…' : 'Save changes' }}
+          </button>
+        </div>
+      </form>
+
+      <div class="mt-5 p-4 rounded-4 border border-green bg-opacity-10">
+        <div class="d-flex align-items-center justify-content-between">
+          <div>
+            <h5 class="mb-1">Seller Account</h5>
+            <p class="text-secondary small mb-0">
+              Current status:
+              <span class="badge" [ngClass]="{
+                'bg-secondary': me.sellerStatus === 'NONE',
+                'bg-warning text-dark': me.sellerStatus === 'PENDING',
+                'bg-success': me.sellerStatus === 'APPROVED',
+                'bg-danger': me.sellerStatus === 'REJECTED'
+              }">{{ me.sellerStatus }}</span>
+            </p>
+          </div>
+
+          <button
+            *ngIf="me.sellerStatus === 'NONE' || me.sellerStatus === 'REJECTED'"
+            class="btn btn-info btn-sm"
+            (click)="applyToSeller()">
+            Apply to be Seller
+          </button>
+
+          <div *ngIf="me.sellerStatus === 'APPROVED'" class="text-success fw-bold">
+            <i class="fas fa-check-circle me-1"></i> You are a Seller
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

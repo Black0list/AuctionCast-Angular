@@ -24,4 +24,11 @@ export interface UserMe {
   lastName?: string;
   phone?: string;
   photo?: string;
+  sellerStatus: 'NONE' | 'PENDING' | 'APPROVED' | 'REJECTED';
+  addressLine1?: string;
+  addressLine2?: string;
+  city?: string;
+  state?: string;
+  postalCode?: string;
+  country?: string;
 }
