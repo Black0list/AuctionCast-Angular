@@ -83,4 +83,19 @@ export class AuthService {
       return null;
     }
   }
+
+  getUserRoles(): string[] {
+    const token = this.tokenStorage.getAccessToken();
+    if (!token) return [];
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.realm_access?.roles || [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  hasRole(role: string): boolean {
+    return this.getUserRoles().includes(role);
+  }
 }

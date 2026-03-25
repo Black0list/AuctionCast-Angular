@@ -6,6 +6,7 @@ import { authGuard } from './core/guards/auth.guard';
 import { ProfileComponent } from './features/profile/profile.component';
 import { ProductsActiveComponent } from './features/products-active/products-active.component';
 import { SellerGuard } from './core/guards/seller.guard';
+import { AdminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -78,6 +79,7 @@ export const routes: Routes = [
       },
       {
         path: 'admin',
+        canActivate: [AdminGuard],
         loadComponent: () => import('./features/admin/layout/admin-layout.component').then(m => m.AdminLayoutComponent),
         children: [
           { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
