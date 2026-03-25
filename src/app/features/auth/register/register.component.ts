@@ -10,50 +10,59 @@ import { ToastService } from '../../../core/services/toast.service';
   selector: 'app-register',
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   template: `
-    <div class="container py-5" style="max-width: 520px;">
-      <div class="bidly-card p-4">
-        <h3 class="mb-1">Create account</h3>
-        <p class="text-secondary mb-4">Join Bidly to bid and sell</p>
+    <div class="auth-wrapper d-flex align-items-center justify-content-center">
+      <div class="container" style="max-width: 520px;">
+        <div class="bidly-card p-4 shadow-lg">
+          <h3 class="mb-1 fw-bold text-white">Create account</h3>
+          <p class="text-secondary mb-4">Join Bidly to bid and sell</p>
 
-        <form [formGroup]="form" (ngSubmit)="submit()" class="row g-3">
-          <div class="col-md-6">
-            <label class="form-label text-secondary">First name</label>
-            <input class="form-control bidly-input" formControlName="firstName" />
-          </div>
-
-          <div class="col-md-6">
-            <label class="form-label text-secondary">Last name</label>
-            <input class="form-control bidly-input" formControlName="lastName" />
-          </div>
-
-          <div class="col-12">
-            <label class="form-label text-secondary">Email</label>
-            <input class="form-control bidly-input" type="email" formControlName="email" />
-          </div>
-
-          <div class="col-12">
-            <label class="form-label text-secondary">Password</label>
-            <input class="form-control bidly-input" type="password" formControlName="password" />
-            <div class="form-text text-secondary">
-              Minimum 6 characters.
+          <form [formGroup]="form" (ngSubmit)="submit()" class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label text-secondary small text-uppercase fw-bold">First name</label>
+              <input class="form-control bidly-input" formControlName="firstName" placeholder="John" />
             </div>
-          </div>
 
-          <div class="col-12 d-grid">
-            <button class="btn btn-bidly" type="submit" [disabled]="form.invalid || loading">
-              {{ loading ? 'Creating…' : 'Create account' }}
-            </button>
-          </div>
+            <div class="col-md-6">
+              <label class="form-label text-secondary small text-uppercase fw-bold">Last name</label>
+              <input class="form-control bidly-input" formControlName="lastName" placeholder="Doe" />
+            </div>
 
-          <div class="col-12 text-center mt-3">
-            <p class="mb-0">
-              <a routerLink="/login" class="text-decoration-none text-info">Already have an account? Sign in</a>
-            </p>
-          </div>
-        </form>
+            <div class="col-12">
+              <label class="form-label text-secondary small text-uppercase fw-bold">Email</label>
+              <input class="form-control bidly-input" type="email" formControlName="email" placeholder="john@example.com" />
+            </div>
+
+            <div class="col-12">
+              <label class="form-label text-secondary small text-uppercase fw-bold">Password</label>
+              <input class="form-control bidly-input" type="password" formControlName="password" placeholder="••••••••" />
+              <div class="form-text text-secondary opacity-75">
+                Minimum 6 characters.
+              </div>
+            </div>
+
+            <div class="col-12 d-grid mt-4">
+              <button class="btn btn-bidly py-2" type="submit" [disabled]="form.invalid || loading">
+                {{ loading ? 'Creating…' : 'Create account' }}
+              </button>
+            </div>
+
+            <div class="col-12 text-center mt-4 pt-2 border-top border-bidly-border">
+              <p class="mb-0 text-secondary">
+                Already have an account? <a routerLink="/login" class="text-decoration-none text-bidly-accent fw-bold">Sign in</a>
+              </p>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   `,
+  styles: [`
+    .auth-wrapper {
+      min-height: 100vh;
+      background: var(--bidly-bg);
+    }
+    .text-bidly-accent { color: var(--bidly-accent); }
+  `]
 })
 export class RegisterComponent {
   loading = false;

@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AdminService } from '../../../core/services/admin.service';
+import {RouterLink} from '@angular/router';
 
 @Component({
     selector: 'app-admin-dashboard',
     standalone: true,
-    imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
     template: `
     <div class="dashboard-container">
       <div class="welcome-card p-5 rounded-4 mb-4">
@@ -12,16 +14,16 @@ import { CommonModule } from '@angular/common';
         <p class="text-secondary lead">Manage products, users and auction monitoring from this central dashboard.</p>
       </div>
 
-      <div class="row g-4">
+      <div class="row g-4" *ngIf="stats">
         <div class="col-md-3">
           <div class="stat-card p-4 rounded-4 shadow-sm border border-bidly-border">
             <div class="d-flex justify-content-between align-items-center mb-3">
               <span class="text-secondary small fw-bold text-uppercase">Total Users</span>
               <i class="fas fa-users text-primary"></i>
             </div>
-            <h2 class="h1 fw-bold mb-0">1,280</h2>
+            <h2 class="h1 fw-bold mb-0">{{ stats.totalUsers | number }}</h2>
             <div class="text-success small mt-2">
-              <i class="fas fa-arrow-up me-1"></i> +12% this month
+              <i class="fas fa-check-circle me-1"></i> System Active
             </div>
           </div>
         </div>
@@ -32,9 +34,9 @@ import { CommonModule } from '@angular/common';
               <span class="text-secondary small fw-bold text-uppercase">Active Products</span>
               <i class="fas fa-box text-success"></i>
             </div>
-            <h2 class="h1 fw-bold mb-0">842</h2>
+            <h2 class="h1 fw-bold mb-0">{{ stats.activeProducts | number }}</h2>
             <div class="text-success small mt-2">
-              <i class="fas fa-arrow-up me-1"></i> +5% from yesterday
+              <i class="fas fa-tag me-1"></i> Ready for auction
             </div>
           </div>
         </div>
@@ -45,9 +47,9 @@ import { CommonModule } from '@angular/common';
               <span class="text-secondary small fw-bold text-uppercase">Ongoing Auctions</span>
               <i class="fas fa-gavel text-warning"></i>
             </div>
-            <h2 class="h1 fw-bold mb-0">56</h2>
-            <div class="text-secondary small mt-2">
-              8 starting in next hour
+            <h2 class="h1 fw-bold mb-0">{{ stats.ongoingAuctions | number }}</h2>
+            <div class="text-warning small mt-2">
+               Live bidding in progress
             </div>
           </div>
         </div>
@@ -58,66 +60,50 @@ import { CommonModule } from '@angular/common';
               <span class="text-secondary small fw-bold text-uppercase">Revenue</span>
               <i class="fas fa-dollar-sign text-accent"></i>
             </div>
-            <h2 class="h1 fw-bold mb-0">$12,450</h2>
-            <div class="text-danger small mt-2">
-              <i class="fas fa-arrow-down me-1"></i> -2% from peak
+            <h2 class="h1 fw-bold mb-0">{{ stats.totalRevenue | currency }}</h2>
+            <div class="text-accent small mt-2">
+              <i class="fas fa-chart-line me-1"></i> Total Sales (Excl. Cancelled)
             </div>
           </div>
         </div>
       </div>
 
+      <!-- Loading Placeholder -->
+      <div class="row g-4" *ngIf="!stats">
+         <div class="col-md-3" *ngFor="let i of [1,2,3,4]">
+            <div class="stat-card p-4 rounded-4 border border-bidly-border opacity-50">
+               <div class="placeholder-glow">
+                  <span class="placeholder col-6 mb-3"></span>
+                  <h2 class="placeholder col-8"></h2>
+               </div>
+            </div>
+         </div>
+      </div>
+
       <div class="mt-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
-          <h3 class="h4 fw-bold mb-0">Recent Activity</h3>
-          <button class="btn btn-sm btn-bidly-outline">View All</button>
+          <h3 class="h4 fw-bold mb-0">Quick Access</h3>
+          <div class="d-flex gap-2">
+             <button class="btn btn-sm btn-bidly-outline" routerLink="/app/admin/users">Manage Users</button>
+             <button class="btn btn-sm btn-bidly-outline" routerLink="/app/admin/products">Inventory</button>
+          </div>
         </div>
-        
-        <div class="bidly-card p-0 overflow-hidden shadow-lg border-0 bg-dark-subtle bg-opacity-10">
-          <table class="table table-dark table-hover mb-0 align-middle">
-            <thead class="bg-dark bg-opacity-50">
-              <tr>
-                <th class="ps-4 py-3 text-secondary small">EVENT</th>
-                <th class="py-3 text-secondary small">USER</th>
-                <th class="py-3 text-secondary small">TIMESTAMP</th>
-                <th class="py-3 text-secondary small text-end pe-4">STATUS</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="ps-4">
-                  <div class="d-flex align-items-center gap-2">
-                    <i class="fas fa-user-plus text-info"></i>
-                    New User Registration
-                  </div>
-                </td>
-                <td>john.doe&#64;example.com</td>
-                <td>Just now</td>
-                <td class="text-end pe-4"><span class="badge bg-success bg-opacity-25 text-success">Completed</span></td>
-              </tr>
-              <tr>
-                <td class="ps-4">
-                  <div class="d-flex align-items-center gap-2">
-                    <i class="fas fa-box-open text-warning"></i>
-                    New Product Published
-                  </div>
-                </td>
-                <td>seller.pro&#64;auction.net</td>
-                <td>12 minutes ago</td>
-                <td class="text-end pe-4"><span class="badge bg-info bg-opacity-25 text-info">Pending Review</span></td>
-              </tr>
-              <tr>
-                <td class="ps-4">
-                  <div class="d-flex align-items-center gap-2">
-                    <i class="fas fa-hammer text-danger"></i>
-                    New Bid Placed
-                  </div>
-                </td>
-                <td>bidder.99&#64;gmail.com</td>
-                <td>24 minutes ago</td>
-                <td class="text-end pe-4"><span class="badge bg-success bg-opacity-25 text-success">Active</span></td>
-              </tr>
-            </tbody>
-          </table>
+
+        <div class="row g-4">
+           <div class="col-md-6">
+              <div class="bidly-card p-4 h-100">
+                 <h5 class="mb-3">Recent Users</h5>
+                 <p class="text-secondary small">Head over to the Users section to manage roles and approvals.</p>
+                 <a routerLink="/app/admin/users" class="btn btn-bidly btn-sm mt-3">Go to Users</a>
+              </div>
+           </div>
+           <div class="col-md-6">
+              <div class="bidly-card p-4 h-100">
+                 <h5 class="mb-3">Live Monitoring</h5>
+                 <p class="text-secondary small">Monitor real-time bids and auction statuses.</p>
+                 <a routerLink="/app/admin/auctions" class="btn btn-bidly btn-sm mt-3">View Auctions</a>
+              </div>
+           </div>
         </div>
       </div>
     </div>
@@ -136,9 +122,20 @@ import { CommonModule } from '@angular/common';
       transform: translateY(-5px);
     }
     .text-accent { color: var(--bidly-accent); }
-    .table-hover tbody tr:hover {
-      background: rgba(255, 255, 255, 0.02) !important;
-    }
   `]
 })
-export class AdminDashboardComponent { }
+export class AdminDashboardComponent implements OnInit {
+    private readonly adminService = inject(AdminService);
+    stats: any;
+
+    ngOnInit() {
+        this.loadStats();
+    }
+
+    loadStats() {
+        this.adminService.getDashboardStats().subscribe({
+            next: (data) => this.stats = data,
+            error: (err) => console.error('Failed to load dashboard stats', err)
+        });
+    }
+}

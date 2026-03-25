@@ -69,4 +69,15 @@ export class AuthService {
   isLoggedIn(): boolean {
     return !!this.tokenStorage.getAccessToken();
   }
+
+  getUserId(): string | null {
+    const token = this.tokenStorage.getAccessToken();
+    if (!token) return null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.sub;
+    } catch (e) {
+      return null;
+    }
+  }
 }

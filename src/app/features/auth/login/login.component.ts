@@ -1,38 +1,53 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
   standalone: true,
   selector: 'app-login',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   template: `
-    <div class="container py-5" style="max-width: 440px;">
-      <div class="bidly-card p-4">
-        <h3 class="mb-1">Sign in</h3>
-        <p class="text-secondary mb-4">Use your Bidly account</p>
+    <div class="auth-wrapper d-flex align-items-center justify-content-center">
+      <div class="container" style="max-width: 440px;">
+        <div class="bidly-card p-4 shadow-lg">
+          <h3 class="mb-1 fw-bold text-white">Sign in</h3>
+          <p class="text-secondary mb-4">Use your Bidly account</p>
 
-        <form [formGroup]="form" (ngSubmit)="submit()" class="d-grid gap-3">
-          <div>
-            <label class="form-label text-secondary">Email</label>
-            <input class="form-control bidly-input" type="email" formControlName="email" />
+          <form [formGroup]="form" (ngSubmit)="submit()" class="d-grid gap-3">
+            <div>
+              <label class="form-label text-secondary small text-uppercase fw-bold">Email</label>
+              <input class="form-control bidly-input" type="email" formControlName="email" placeholder="name@example.com" />
+            </div>
+
+            <div>
+              <label class="form-label text-secondary small text-uppercase fw-bold">Password</label>
+              <input class="form-control bidly-input" type="password" formControlName="password" placeholder="••••••••" />
+            </div>
+
+            <button class="btn btn-bidly py-2 mt-2" type="submit" [disabled]="form.invalid || loading">
+              {{ loading ? 'Signing in…' : 'Sign in' }}
+            </button>
+          </form>
+
+          <div class="text-center mt-4 pt-2 border-top border-bidly-border">
+            <p class="mb-0 text-secondary">
+              New to Bidly? <a routerLink="/register" class="text-decoration-none text-bidly-accent fw-bold">Create an account</a>
+            </p>
           </div>
-
-          <div>
-            <label class="form-label text-secondary">Password</label>
-            <input class="form-control bidly-input" type="password" formControlName="password" />
-          </div>
-
-          <button class="btn btn-bidly" type="submit" [disabled]="form.invalid || loading">
-            {{ loading ? 'Signing in…' : 'Sign in' }}
-          </button>
-        </form>
+        </div>
       </div>
     </div>
   `,
+  styles: [`
+    .auth-wrapper {
+      min-height: 100vh;
+      background: var(--bidly-bg);
+    }
+    .text-bidly-accent { color: var(--bidly-accent); }
+  `]
 })
 export class LoginComponent {
   loading = false;

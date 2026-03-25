@@ -33,6 +33,12 @@ export class ProfileComponent {
     firstName: new FormControl<string>('', { nonNullable: true }),
     lastName: new FormControl<string>('', { nonNullable: true }),
     phone: new FormControl<string>('', { nonNullable: true }),
+    addressLine1: new FormControl<string>('', { nonNullable: true }),
+    addressLine2: new FormControl<string>('', { nonNullable: true }),
+    city: new FormControl<string>('', { nonNullable: true }),
+    state: new FormControl<string>('', { nonNullable: true }),
+    postalCode: new FormControl<string>('', { nonNullable: true }),
+    country: new FormControl<string>('', { nonNullable: true }),
   });
 
   constructor(private readonly auth: AuthService) {
@@ -51,6 +57,12 @@ export class ProfileComponent {
             firstName: me.firstName ?? '',
             lastName: me.lastName ?? '',
             phone: me.phone ?? '',
+            addressLine1: me.addressLine1 ?? '',
+            addressLine2: me.addressLine2 ?? '',
+            city: me.city ?? '',
+            state: me.state ?? '',
+            postalCode: me.postalCode ?? '',
+            country: me.country ?? '',
           });
         }),
         catchError((e) => {
@@ -89,6 +101,12 @@ export class ProfileComponent {
         firstName: v.firstName,
         lastName: v.lastName,
         phone: v.phone,
+        addressLine1: v.addressLine1,
+        addressLine2: v.addressLine2,
+        city: v.city,
+        state: v.state,
+        postalCode: v.postalCode,
+        country: v.country,
         photo: this.selectedPhoto,
       })
       .subscribe({

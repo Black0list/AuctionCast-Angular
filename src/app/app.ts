@@ -10,14 +10,15 @@ import { ToastComponent } from './shared/components/toast/toast';
   imports: [CommonModule, RouterOutlet, NavbarComponent, ToastComponent],
   template: `
     <app-toast></app-toast>
-    <app-navbar *ngIf="!isAdminRoute()"></app-navbar>
+    <app-navbar *ngIf="shouldShowNavbar()"></app-navbar>
     <router-outlet></router-outlet>
   `,
 })
 export class App {
   constructor(private router: Router) { }
 
-  isAdminRoute(): boolean {
-    return this.router.url.startsWith('/app/admin');
+  shouldShowNavbar(): boolean {
+    const url = this.router.url;
+    return !url.includes('/login') && !url.includes('/register') && !url.startsWith('/app/admin');
   }
 }
