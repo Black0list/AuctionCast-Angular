@@ -42,6 +42,12 @@ export class AuthApiService {
     if (req.firstName !== undefined) form.append('firstName', req.firstName);
     if (req.lastName !== undefined) form.append('lastName', req.lastName);
     if (req.phone !== undefined) form.append('phone', req.phone);
+    if (req.addressLine1 !== undefined) form.append('addressLine1', req.addressLine1);
+    if (req.addressLine2 !== undefined) form.append('addressLine2', req.addressLine2);
+    if (req.city !== undefined) form.append('city', req.city);
+    if (req.state !== undefined) form.append('state', req.state);
+    if (req.postalCode !== undefined) form.append('postalCode', req.postalCode);
+    if (req.country !== undefined) form.append('country', req.country);
     if (req.photo) form.append('photo', req.photo);
 
     return this.http.patch<ApiResponse<UserMe>>(

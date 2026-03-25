@@ -49,6 +49,41 @@
           <input class="form-control bidly-input" type="file" (change)="onFileChange($event)" />
         </div>
 
+        <div class="col-12 mt-4">
+          <h6 class="text-bidly-accent text-uppercase small fw-bold">Shipping Address</h6>
+          <hr class="mt-1 mb-3 opacity-25">
+        </div>
+
+        <div class="col-md-12">
+          <label class="form-label text-secondary">Address Line 1</label>
+          <input class="form-control bidly-input" formControlName="addressLine1" placeholder="Street address, P.O. box, etc." />
+        </div>
+
+        <div class="col-md-12">
+          <label class="form-label text-secondary">Address Line 2 (Optional)</label>
+          <input class="form-control bidly-input" formControlName="addressLine2" placeholder="Apartment, suite, unit, building, floor, etc." />
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label text-secondary">City</label>
+          <input class="form-control bidly-input" formControlName="city" />
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label text-secondary">State / Province</label>
+          <input class="form-control bidly-input" formControlName="state" />
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label text-secondary">Postal / ZIP Code</label>
+          <input class="form-control bidly-input" formControlName="postalCode" />
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label text-secondary">Country</label>
+          <input class="form-control bidly-input" formControlName="country" />
+        </div>
+
         <div class="col-12 d-grid">
           <button class="btn btn-bidly" type="submit" [disabled]="saving">
             {{ saving ? 'Saving…' : 'Save changes' }}
