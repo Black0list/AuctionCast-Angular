@@ -40,7 +40,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
               <tr *ngFor="let auction of paginatedAuctions">
                 <td class="ps-4 py-3">
                   <div class="d-flex align-items-center gap-3">
-                    <img [src]="(auction.product.coverImage || 'assets/placeholder.png') | mediaUrl" class="product-thumb" alt="thumb">
+                    <img [src]="getCoverImage(auction.product) | mediaUrl" class="product-thumb" alt="thumb">
                     <div>
                       <div class="fw-bold text-truncate" style="max-width: 250px;">{{ auction.product.title }}</div>
                       <div class="text-secondary x-small">ID: {{ auction.id.substring(0, 8) }}...</div>
@@ -173,8 +173,13 @@ export class AdminAuctionListComponent implements OnInit {
         });
     }
 
-    getCoverImage(auction: AuctionResponse): string {
-        return auction.product.imageUrls?.find(img => img.cover)?.imageUrl || 'assets/placeholder.png';
+    getCoverImage(product: any): string {
+        if (!product) return 'assets/placeholder.png';
+        if (product.coverImage) return product.coverImage;
+        if (product.imageUrls && product.imageUrls.length > 0) {
+            return product.imageUrls[0].imageUrl;
+        }
+        return 'assets/placeholder.png';
     }
 
     getSellerName(auction: AuctionResponse): string {

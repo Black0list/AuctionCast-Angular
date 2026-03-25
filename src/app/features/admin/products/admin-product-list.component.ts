@@ -39,7 +39,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
               <tr *ngFor="let product of paginatedProducts">
                 <td class="ps-4 py-3">
                   <div class="d-flex align-items-center gap-3">
-                    <img [src]="(product.coverImage || 'assets/placeholder.png') | mediaUrl" class="product-thumb" alt="thumb">
+                    <img [src]="getCoverImage(product) | mediaUrl" class="product-thumb" alt="thumb">
                     <div>
                       <div class="fw-bold">{{ product.title }}</div>
                       <div class="text-secondary x-small">ID: {{ product.id.substring(0, 8) }}...</div>
@@ -176,8 +176,13 @@ export class AdminProductListComponent implements OnInit {
         });
     }
 
-    getCoverImage(product: ProductResponseDTO): string {
-        return product.imageUrls?.find(img => img.cover)?.imageUrl || 'assets/placeholder.png';
+    getCoverImage(product: any): string {
+        if (!product) return 'assets/placeholder.png';
+        if (product.coverImage) return product.coverImage;
+        if (product.imageUrls && product.imageUrls.length > 0) {
+            return product.imageUrls[0].imageUrl;
+        }
+        return 'assets/placeholder.png';
     }
 
     getSellerName(product: ProductResponseDTO): string {
