@@ -49,8 +49,13 @@ import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
                   </span>
                 </td>
                 <td class="py-3">
-                  <span *ngIf="user.isActive" class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">Active</span>
-                  <span *ngIf="!user.isActive" class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25">Inactive</span>
+                  <select 
+                    class="form-select form-select-sm bg-dark text-light border-secondary border-opacity-25"
+                    (change)="onStatusChange(user, $event)"
+                  >
+                    <option [value]="true" [selected]="user.isActive">Active</option>
+                    <option [value]="false" [selected]="!user.isActive">Inactive</option>
+                  </select>
                 </td>
                 <td class="py-3 text-end pe-4">
                   <div class="d-flex justify-content-end gap-2">
@@ -129,5 +134,20 @@ export class AdminUserListComponent implements OnInit {
                 error: () => this.toasts.error('Failed to delete user')
             });
         }
+    }
+
+    onStatusChange(user: AdminUser, event: any) {
+        const isActive = event.target.value === 'true';
+        this.adminService.updateUserStatus(user.id, isActive).subscribe({
+            next: () => {
+                this.toasts.success(`User is now ${isActive ? 'Active' : 'Inactive'}`);
+                user.isActive = isActive;
+            },
+            error: () => {
+                this.toasts.error('Failed to update user status');
+                // Revert the select value if it fails
+                event.target.value = user.isActive.toString();
+            }
+        });
     }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, HostListener, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
@@ -51,6 +51,11 @@ import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
             <span class="nav-label" *ngIf="!isCollapsed">Auctions</span>
           </a>
 
+          <a routerLink="/app/admin/orders" routerLinkActive="active" class="nav-item" title="Shipments">
+            <i class="fas fa-shipping-fast"></i>
+            <span class="nav-label" *ngIf="!isCollapsed">Shipments</span>
+          </a>
+
           <div class="spacer"></div>
 
           <a routerLink="/app/home" class="nav-item back-btn" title="Exit Admin">
@@ -66,24 +71,36 @@ import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
           <div class="breadcrumb text-secondary small">
             <span>Admin</span> / <span class="text-white">Management</span>
           </div>
-          <div class="user-meta d-flex align-items-center gap-2">
-            <span class="badge bg-danger rounded-pill">Admin</span>
+          <div class="user-meta d-flex align-items-center gap-3">
+            <div class="text-end d-none d-md-block">
+               <div class="fw-bold text-white small">{{ adminData?.firstName }}</div>
+               <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 py-1 px-2" style="font-size: 0.6rem;">SYSTEM ADMIN</span>
+            </div>
             <div class="dropdown">
-              <div class="avatar dropdown-toggle" role="button" (click)="toggleDropdown()" style="cursor: pointer;">
-                <img *ngIf="adminData?.photo" [src]="adminData!.photo | mediaUrl" alt="Admin" class="rounded-circle shadow-sm" width="36" height="36" style="object-fit: cover;">
-                <div *ngIf="!adminData?.photo" class="bg-secondary rounded-circle d-flex justify-content-center align-items-center shadow-sm" style="width: 36px; height: 36px;">
-                  <i class="fas fa-user-shield text-white"></i>
-                </div>
+              <div class="avatar position-relative" role="button" (click)="toggleDropdown($event)" style="cursor: pointer;">
+                <img [src]="adminData?.photo ? (adminData!.photo | mediaUrl) : 'https://ui-avatars.com/api/?name=' + (adminData?.firstName || 'Admin') + '+&background=dc3545&color=fff'" 
+                     alt="Admin" class="rounded-circle shadow-sm border border-white border-opacity-10" width="38" height="38" style="object-fit: cover;">
+                <div class="status-indicator online"></div>
               </div>
-              <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" [class.show]="isDropdownOpen" style="background: var(--bg-card); position: absolute; right: 0;">
+              <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2 p-2 rounded-3" [class.show]="isDropdownOpen" 
+                  style="background: #1a1f26; min-width: 220px; position: absolute; right: 0; border: 1px solid rgba(255,255,255,0.05) !important;">
+                <li class="px-3 py-2 mb-2 border-bottom border-white border-opacity-10">
+                   <div class="fw-bold text-white small">{{ adminData?.firstName }} {{ adminData?.lastName }}</div>
+                   <div class="x-small text-secondary">{{ adminData?.email }}</div>
+                </li>
                 <li>
-                  <a class="dropdown-item d-flex align-items-center gap-2 py-2 text-white" routerLink="/app/me" (click)="isDropdownOpen = false">
-                    <i class="fas fa-user-circle"></i> Profile
+                  <a class="dropdown-item d-flex align-items-center gap-2 py-2 rounded-2" routerLink="/app/me" (click)="isDropdownOpen = false">
+                    <i class="fas fa-user-circle text-primary"></i> My Profile
                   </a>
                 </li>
-                <li><hr class="dropdown-divider border-secondary opacity-25"></li>
                 <li>
-                  <a class="dropdown-item d-flex align-items-center gap-2 py-2 text-danger" href="javascript:void(0)" (click)="logout()">
+                  <a class="dropdown-item d-flex align-items-center gap-2 py-2 rounded-2" routerLink="/app/home" (click)="isDropdownOpen = false">
+                    <i class="fas fa-external-link-alt text-success"></i> View Site
+                  </a>
+                </li>
+                <li><hr class="dropdown-divider border-white border-opacity-10"></li>
+                <li>
+                  <a class="dropdown-item d-flex align-items-center gap-2 py-2 rounded-2 text-danger" href="javascript:void(0)" (click)="logout()">
                     <i class="fas fa-sign-out-alt"></i> Logout
                   </a>
                 </li>
@@ -101,11 +118,12 @@ import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
   styleUrl: './admin-layout.component.css'
 })
 export class AdminLayoutComponent implements OnInit {
+  private authService = inject(AuthService);
+  private el = inject(ElementRef);
+
   isCollapsed = false;
   isDropdownOpen = false;
   adminData?: UserMe;
-
-  constructor(private authService: AuthService) { }
 
   ngOnInit(): void {
     this.authService.me().subscribe({
@@ -115,15 +133,24 @@ export class AdminLayoutComponent implements OnInit {
     });
   }
 
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (!this.el.nativeElement.contains(event.target)) {
+      this.isDropdownOpen = false;
+    }
+  }
+
   toggleSidebar() {
     this.isCollapsed = !this.isCollapsed;
   }
 
-  toggleDropdown() {
+  toggleDropdown(event: MouseEvent) {
+    event.stopPropagation();
     this.isDropdownOpen = !this.isDropdownOpen;
   }
 
   logout() {
+    this.isDropdownOpen = false;
     this.authService.logout();
   }
 }
