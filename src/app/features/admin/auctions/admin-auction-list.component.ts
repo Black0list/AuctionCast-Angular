@@ -4,11 +4,12 @@ import { AdminService } from '../../../core/services/admin.service';
 import { AuctionResponse, AuctionStatus } from '../../../core/models/auction.models';
 import { ToastService } from '../../../core/services/toast.service';
 import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 
 @Component({
-    selector: 'app-admin-auction-list',
-    standalone: true,
-    imports: [CommonModule, MediaUrlPipe],
+  selector: 'app-admin-auction-list',
+  standalone: true,
+  imports: [CommonModule, MediaUrlPipe, PaginationComponent],
     template: `
     <div class="admin-auctions-container">
       <div class="d-flex justify-content-between align-items-center mb-4">
@@ -36,10 +37,10 @@ import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let auction of filteredAuctions">
+              <tr *ngFor="let auction of paginatedAuctions">
                 <td class="ps-4 py-3">
                   <div class="d-flex align-items-center gap-3">
-                    <img [src]="getCoverImage(auction) | mediaUrl" class="product-thumb" alt="thumb">
+                    <img [src]="(auction.product.coverImage || 'assets/placeholder.png') | mediaUrl" class="product-thumb" alt="thumb">
                     <div>
                       <div class="fw-bold text-truncate" style="max-width: 250px;">{{ auction.product.title }}</div>
                       <div class="text-secondary x-small">ID: {{ auction.id.substring(0, 8) }}...</div>
@@ -79,6 +80,13 @@ import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
             </tbody>
           </table>
         </div>
+        
+        <app-pagination 
+          [totalItems]="filteredAuctions.length" 
+          [pageSize]="pageSize" 
+          [currentPage]="currentPage"
+          (pageChanged)="onPageChange($event)">
+        </app-pagination>
       </div>
     </div>
   `,
@@ -141,6 +149,15 @@ export class AdminAuctionListComponent implements OnInit {
     auctions: AuctionResponse[] = [];
     filteredAuctions: AuctionResponse[] = [];
     searchTerm = '';
+    
+    // Pagination fields
+    pageSize = 10;
+    currentPage = 1;
+
+    get paginatedAuctions(): AuctionResponse[] {
+        const start = (this.currentPage - 1) * this.pageSize;
+        return this.filteredAuctions.slice(start, start + this.pageSize);
+    }
 
     ngOnInit() {
         this.loadAuctions();
@@ -168,7 +185,12 @@ export class AdminAuctionListComponent implements OnInit {
 
     onSearch(event: Event) {
         this.searchTerm = (event.target as HTMLInputElement).value.toLowerCase();
+        this.currentPage = 1; // Reset to first page on search
         this.applyFilter();
+    }
+
+    onPageChange(page: number) {
+        this.currentPage = page;
     }
 
     applyFilter() {

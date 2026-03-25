@@ -4,11 +4,12 @@ import { AdminService } from '../../../core/services/admin.service';
 import { OrderStatus } from '../../../core/models/order.models';
 import { OrderPublicResponse } from '../../../core/services/order.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 
 @Component({
-    selector: 'app-admin-order-list',
-    standalone: true,
-    imports: [CommonModule],
+  selector: 'app-admin-order-list',
+  standalone: true,
+  imports: [CommonModule, PaginationComponent],
     template: `
     <div class="admin-orders-container">
       <div class="d-flex justify-content-between align-items-center mb-4">
@@ -36,7 +37,7 @@ import { ToastService } from '../../../core/services/toast.service';
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let order of filteredOrders">
+              <tr *ngFor="let order of paginatedOrders">
                 <td class="ps-4 py-3">
                   <div class="fw-bold text-primary small">#{{ order.id.substring(0, 8).toUpperCase() }}</div>
                   <div class="text-secondary x-small">{{ order.createdAt | date:'shortDate' }}</div>
@@ -84,6 +85,13 @@ import { ToastService } from '../../../core/services/toast.service';
             </tbody>
           </table>
         </div>
+        
+        <app-pagination 
+          [totalItems]="filteredOrders.length" 
+          [pageSize]="pageSize" 
+          [currentPage]="currentPage"
+          (pageChanged)="onPageChange($event)">
+        </app-pagination>
       </div>
     </div>
   `,
@@ -135,6 +143,15 @@ export class AdminOrderListComponent implements OnInit {
     orders: OrderPublicResponse[] = [];
     filteredOrders: OrderPublicResponse[] = [];
     searchTerm = '';
+    
+    // Pagination fields
+    pageSize = 10;
+    currentPage = 1;
+
+    get paginatedOrders(): OrderPublicResponse[] {
+        const start = (this.currentPage - 1) * this.pageSize;
+        return this.filteredOrders.slice(start, start + this.pageSize);
+    }
 
     ngOnInit() {
         this.loadOrders();
@@ -152,7 +169,12 @@ export class AdminOrderListComponent implements OnInit {
 
     onSearch(event: Event) {
         this.searchTerm = (event.target as HTMLInputElement).value.toLowerCase();
+        this.currentPage = 1; // Reset to first page on search
         this.applyFilter();
+    }
+
+    onPageChange(page: number) {
+        this.currentPage = page;
     }
 
     applyFilter() {

@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { AdminService, AdminUser } from '../../../core/services/admin.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 
 @Component({
-    selector: 'app-admin-application-list',
-    standalone: true,
-    imports: [CommonModule, MediaUrlPipe],
+  selector: 'app-admin-application-list',
+  standalone: true,
+  imports: [CommonModule, MediaUrlPipe, PaginationComponent],
     template: `
     <div class="admin-applications-container">
       <div class="mb-4">
@@ -27,7 +28,7 @@ import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let user of applications">
+              <tr *ngFor="let user of paginatedApplications">
                 <td class="ps-4 py-3">
                   <div class="d-flex align-items-center gap-3">
                     <img [src]="user.photo | mediaUrl" class="user-avatar" [alt]="user.firstName">
@@ -63,6 +64,13 @@ import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
             </tbody>
           </table>
         </div>
+        
+        <app-pagination 
+          [totalItems]="applications.length" 
+          [pageSize]="pageSize" 
+          [currentPage]="currentPage"
+          (pageChanged)="onPageChange($event)">
+        </app-pagination>
       </div>
     </div>
   `,
@@ -86,6 +94,15 @@ export class AdminApplicationListComponent implements OnInit {
     private readonly toasts = inject(ToastService);
 
     applications: AdminUser[] = [];
+    
+    // Pagination fields
+    pageSize = 10;
+    currentPage = 1;
+
+    get paginatedApplications(): AdminUser[] {
+        const start = (this.currentPage - 1) * this.pageSize;
+        return this.applications.slice(start, start + this.pageSize);
+    }
 
     ngOnInit() {
         this.loadApplications();
@@ -95,9 +112,14 @@ export class AdminApplicationListComponent implements OnInit {
         this.adminService.getUsers().subscribe({
             next: (users) => {
                 this.applications = users.filter(u => u.sellerStatus === 'PENDING');
+                this.currentPage = 1;
             },
             error: () => this.toasts.error('Failed to load applications')
         });
+    }
+
+    onPageChange(page: number) {
+        this.currentPage = page;
     }
 
     onApprove(userId: string) {
