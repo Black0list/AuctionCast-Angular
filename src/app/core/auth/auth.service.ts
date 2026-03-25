@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { map, Observable, tap } from 'rxjs';
+import { map, Observable, tap, throwError } from 'rxjs';
 import { AuthApiService } from './auth-api.service';
 import { LoginRequest, RegisterRequest, UserMe } from '../models/auth.models';
 import { TokenStorageService } from './token-storage.service';
@@ -21,7 +21,9 @@ export class AuthService {
       map((res) => res.data),
       tap((data) => {
         this.tokenStorage.setAccessToken(data.accessToken);
-        this.tokenStorage.setRefreshToken(data.refreshToken);
+        if (data.refreshToken) {
+          this.tokenStorage.setRefreshToken(data.refreshToken);
+        }
       }),
       map(() => void 0)
     );
@@ -30,15 +32,16 @@ export class AuthService {
   refreshToken(): Observable<void> {
     const refresh = this.tokenStorage.getRefreshToken();
     if (!refresh) {
-      this.logout();
-      throw new Error('No refresh token available');
+      return throwError(() => new Error('No refresh token available'));
     }
 
     return this.api.refreshToken(refresh).pipe(
       map((res) => res.data),
       tap((data) => {
         this.tokenStorage.setAccessToken(data.accessToken);
-        this.tokenStorage.setRefreshToken(data.refreshToken);
+        if (data.refreshToken) {
+          this.tokenStorage.setRefreshToken(data.refreshToken);
+        }
       }),
       map(() => void 0)
     );
