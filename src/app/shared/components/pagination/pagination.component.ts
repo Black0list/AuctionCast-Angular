@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="pagination-container d-flex justify-content-between align-items-center mt-4 px-4 py-3 bg-dark bg-opacity-25 border-top border-white border-opacity-10">
+    <div class="pagination-container d-flex justify-content-between align-items-center mt-4 px-4 py-3 border-top border-white border-opacity-10">
       <div class="text-secondary small">
         Showing <b>{{ startRange }}</b> to <b>{{ endRange }}</b> of <b>{{ totalItems }}</b> entries
       </div>
@@ -36,40 +36,48 @@ import { CommonModule } from '@angular/common';
     .pagination-container {
       border-bottom-left-radius: 12px;
       border-bottom-right-radius: 12px;
+      background: #0a121d; /* Dark blue background */
     }
     
     .page-link {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: rgba(255, 255, 255, 0.6);
+      background: rgba(57, 255, 136, 0.03);
+      border: 1px solid rgba(57, 255, 136, 0.1);
+      color: rgba(255, 255, 255, 0.7);
       min-width: 32px;
       height: 32px;
+      padding: 0 10px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 0.85rem;
-      border-radius: 6px !important;
-      transition: all 0.2s;
+      border-radius: 8px !important;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     .page-link:hover:not([disabled]) {
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(57, 255, 136, 0.15);
+      border-color: rgba(57, 255, 136, 0.3);
       color: #fff;
+      transform: translateY(-1px);
     }
     
     .page-item.active .page-link {
       background: var(--bidly-accent, #39ff88);
       border-color: var(--bidly-accent, #39ff88);
       color: #000;
-      font-weight: 600;
+      font-weight: 700;
+      box-shadow: 0 0 15px rgba(57, 255, 136, 0.3);
     }
     
     .page-item.disabled .page-link {
-      opacity: 0.3;
+      opacity: 0.2;
       cursor: not-allowed;
+      background: rgba(255, 255, 255, 0.02);
     }
     
     .x-small { font-size: 0.7rem; }
+    
+    b { color: var(--bidly-accent, #39ff88); }
   `]
 })
 export class PaginationComponent {
