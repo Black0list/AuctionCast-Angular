@@ -16,9 +16,11 @@ export class SellerGuard implements CanActivate {
         return this.auth.me().pipe(
             take(1),
             map(user => {
-                // Simple logic for now: all logged in users can access seller features
-                // In a real app, we'd check for a specific role or sellerStatus
-                return true;
+                if (user.sellerStatus === 'APPROVED') {
+                    return true;
+                }
+                this.router.navigate(['/app/home']);
+                return false;
             })
         );
     }

@@ -36,6 +36,11 @@ import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
             <span class="nav-label" *ngIf="!isCollapsed">Inventory</span>
           </a>
 
+          <a routerLink="/app/admin/categories" routerLinkActive="active" class="nav-item" title="Categories">
+            <i class="fas fa-tags"></i>
+            <span class="nav-label" *ngIf="!isCollapsed">Categories</span>
+          </a>
+
           <a routerLink="/app/admin/applications" routerLinkActive="active" class="nav-item" title="Applications">
             <i class="fas fa-id-card"></i>
             <span class="nav-label" *ngIf="!isCollapsed">Applications</span>

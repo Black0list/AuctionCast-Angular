@@ -40,3 +40,14 @@ export interface ProductResponseDTO {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export interface CategoryDTO {
+  name: string;
+  description: string;
+}
+
+export interface CategoryResponseDTO {
+  id: string;
+  name: string;
+  description: string;
+}
