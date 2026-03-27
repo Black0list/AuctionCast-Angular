@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../models/api-response.model';
 import { LoginRequest, LoginResponse, RegisterRequest, UserMe } from '../models/auth.models';
@@ -24,9 +24,11 @@ export class AuthApiService {
   }
 
   refreshToken(token: string) {
+    const params = new HttpParams().set('refreshToken', token);
     return this.http.post<ApiResponse<LoginResponse>>(
-      `${environment.apiUrl}/user-service/auth/refresh?refreshToken=${token}`,
-      {}
+      `${environment.apiUrl}/user-service/auth/refresh`,
+      {},
+      { params }
     );
   }
 

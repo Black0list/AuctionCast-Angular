@@ -39,6 +39,22 @@ export class CatalogService {
     return this.api.getActiveCategories().pipe(map(res => res.data));
   }
 
+  getCategories(): Observable<any[]> {
+    return this.api.getCategories().pipe(map(res => res.data));
+  }
+
+  createCategory(data: any): Observable<any> {
+    return this.api.createCategory(data).pipe(map(res => res.data));
+  }
+
+  updateCategory(name: string, data: any): Observable<any> {
+    return this.api.updateCategory(name, data).pipe(map(res => res.data));
+  }
+
+  deleteCategory(name: string, hard = false): Observable<void> {
+    return this.api.deleteCategory(name, hard).pipe(map(() => void 0));
+  }
+
   checkOwnership(productId: string, userId: string): Observable<boolean> {
     return this.api.isProductOwner(productId, userId).pipe(map(res => res.data));
   }

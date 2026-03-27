@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { map, Observable, tap, throwError } from 'rxjs';
+import { BehaviorSubject, map, Observable, tap, throwError } from 'rxjs';
 import { AuthApiService } from './auth-api.service';
 import { LoginRequest, RegisterRequest, UserMe } from '../models/auth.models';
 import { TokenStorageService } from './token-storage.service';
@@ -9,12 +9,21 @@ import { ToastService } from '../services/toast.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private readonly userSubject = new BehaviorSubject<UserMe | null>(null);
+  readonly user$ = this.userSubject.asObservable();
+
   constructor(
     private readonly api: AuthApiService,
     private readonly tokenStorage: TokenStorageService,
     private readonly router: Router,
     private readonly toast: ToastService
-  ) { }
+  ) {
+    if (this.isLoggedIn()) {
+      this.me().subscribe({
+        error: () => this.logout()
+      });
+    }
+  }
 
   login(body: LoginRequest): Observable<void> {
     return this.api.login(body).pipe(
@@ -25,6 +34,7 @@ export class AuthService {
           this.tokenStorage.setRefreshToken(data.refreshToken);
         }
       }),
+      tap(() => this.me().subscribe()),
       map(() => void 0)
     );
   }
@@ -52,11 +62,17 @@ export class AuthService {
   }
 
   me(): Observable<UserMe> {
-    return this.api.me().pipe(map((res) => res.data));
+    return this.api.me().pipe(
+      map((res) => res.data),
+      tap((user) => this.userSubject.next(user))
+    );
   }
 
   updateMe(req: UpdateProfileRequest): Observable<UserMe> {
-    return this.api.updateMe(req).pipe(map((res) => res.data));
+    return this.api.updateMe(req).pipe(
+      map((res) => res.data),
+      tap((user) => this.userSubject.next(user))
+    );
   }
 
   applySeller(): Observable<void> {
@@ -65,6 +81,7 @@ export class AuthService {
 
   logout(): void {
     this.tokenStorage.clear();
+    this.userSubject.next(null);
     this.toast.info('You have been logged out');
     this.router.navigate(['/login']);
   }

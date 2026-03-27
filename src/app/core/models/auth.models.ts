@@ -14,7 +14,7 @@ export interface LoginResponse {
   accessToken: string;
   refreshToken: string;
   expiresIn: string;
-  refreshExpiresIn: string;
+  refresh_expires_in: string;
 }
 
 export interface UserMe {

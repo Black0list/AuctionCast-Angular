@@ -14,11 +14,10 @@ export const routes: Routes = [
 
   {
     path: 'app',
-    canActivate: [authGuard],
     children: [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: HomeComponent },
-      { path: 'me', component: ProfileComponent },
+      { path: 'me', component: ProfileComponent, canActivate: [authGuard] },
       { path: 'products', component: ProductsActiveComponent },
       {
         path: 'auctions',
@@ -26,10 +25,12 @@ export const routes: Routes = [
       },
       {
         path: 'auctions/:id/bid',
+        canActivate: [authGuard],
         loadComponent: () => import('./features/auctions/live-bidding/live-bidding.component').then(m => m.LiveBiddingComponent)
       },
       {
         path: 'wallet',
+        canActivate: [authGuard],
         loadComponent: () => import('./features/wallet/wallet.component').then(m => m.WalletComponent)
       },
       {
@@ -38,11 +39,12 @@ export const routes: Routes = [
       },
       {
         path: 'me/purchases',
+        canActivate: [authGuard],
         loadComponent: () => import('./features/profile/purchases/my-purchases.component').then(m => m.MyPurchasesComponent)
       },
       {
         path: 'seller/products',
-        canActivate: [SellerGuard],
+        canActivate: [authGuard, SellerGuard],
         children: [
           {
             path: '',
@@ -60,7 +62,7 @@ export const routes: Routes = [
       },
       {
         path: 'seller/auctions',
-        canActivate: [SellerGuard],
+        canActivate: [authGuard, SellerGuard],
         children: [
           {
             path: '',
@@ -74,12 +76,12 @@ export const routes: Routes = [
       },
       {
         path: 'seller/sales',
-        canActivate: [SellerGuard],
+        canActivate: [authGuard, SellerGuard],
         loadComponent: () => import('./features/seller/sales/my-sales.component').then(m => m.MySalesComponent)
       },
       {
         path: 'admin',
-        canActivate: [AdminGuard],
+        canActivate: [authGuard, AdminGuard],
         loadComponent: () => import('./features/admin/layout/admin-layout.component').then(m => m.AdminLayoutComponent),
         children: [
           { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
@@ -90,6 +92,10 @@ export const routes: Routes = [
           {
             path: 'products',
             loadComponent: () => import('./features/admin/products/admin-product-list.component').then(m => m.AdminProductListComponent)
+          },
+          {
+            path: 'categories',
+            loadComponent: () => import('./features/admin/categories/admin-category-list.component').then(m => m.AdminCategoryListComponent)
           },
           {
             path: 'applications',

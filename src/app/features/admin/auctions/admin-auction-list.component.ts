@@ -42,7 +42,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
                   <div class="d-flex align-items-center gap-3">
                     <img [src]="getCoverImage(auction.product) | mediaUrl" class="product-thumb" alt="thumb">
                     <div>
-                      <div class="fw-bold text-truncate" style="max-width: 250px;">{{ auction.product.title }}</div>
+                      <div class="fw-bold text-truncate" style="max-width: 250px;">{{ auction.product?.title || 'Deleted Product' }}</div>
                       <div class="text-secondary x-small">ID: {{ auction.id.substring(0, 8) }}...</div>
                     </div>
                   </div>
@@ -80,10 +80,10 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
             </tbody>
           </table>
         </div>
-        
-        <app-pagination 
-          [totalItems]="filteredAuctions.length" 
-          [pageSize]="pageSize" 
+
+        <app-pagination
+          [totalItems]="filteredAuctions.length"
+          [pageSize]="pageSize"
           [currentPage]="currentPage"
           (pageChanged)="onPageChange($event)">
         </app-pagination>
@@ -149,7 +149,7 @@ export class AdminAuctionListComponent implements OnInit {
     auctions: AuctionResponse[] = [];
     filteredAuctions: AuctionResponse[] = [];
     searchTerm = '';
-    
+
     // Pagination fields
     pageSize = 10;
     currentPage = 1;
@@ -200,7 +200,7 @@ export class AdminAuctionListComponent implements OnInit {
 
     applyFilter() {
         this.filteredAuctions = this.auctions.filter(a =>
-            a.product.title.toLowerCase().includes(this.searchTerm) ||
+            (a.product?.title?.toLowerCase() || 'deleted product').includes(this.searchTerm) ||
             this.getSellerName(a).toLowerCase().includes(this.searchTerm) ||
             a.status.toLowerCase().includes(this.searchTerm)
         );
