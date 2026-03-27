@@ -114,6 +114,15 @@ import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
                       </a>
                     </li>
                   </ng-container>
+                  <ng-container *ngIf="auth.hasRole('ADMIN')">
+                    <li><hr class="dropdown-divider border-secondary opacity-25"></li>
+                    <li><h6 class="dropdown-header small text-secondary">Administration</h6></li>
+                    <li>
+                      <a class="dropdown-item d-flex align-items-center gap-2" routerLink="/app/admin/dashboard" (click)="isDropdownOpen = false">
+                        <i class="fas fa-cogs text-warning"></i> BackOffice
+                      </a>
+                    </li>
+                  </ng-container>
                   <li><hr class="dropdown-divider border-secondary opacity-25"></li>
                   <li>
                     <button class="dropdown-item d-flex align-items-center gap-2 text-danger" (click)="logout()">

@@ -59,7 +59,12 @@ import { finalize } from 'rxjs/operators';
                 <span class="text-bidly-muted x-small fw-bold text-uppercase">{{ auction.product.condition }}</span>
               </div>
               
-              <h5 class="card-title h6 fw-bold mb-3 text-white">{{ auction.product.title }}</h5>
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <h5 class="card-title h6 fw-bold mb-0 text-white">{{ auction.product.title }}</h5>
+                <a [routerLink]="['/app/products', auction.product.id]" class="text-bidly-accent x-small fw-bold text-decoration-none ms-2 flex-shrink-0" title="View Product Details">
+                  <i class="fas fa-info-circle"></i> INFO
+                </a>
+              </div>
               
               <div class="d-flex justify-content-between align-items-end mt-auto pt-3 border-top border-bidly-border">
                 <div>

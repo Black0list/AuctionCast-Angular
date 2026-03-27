@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { AdminService, AdminUser } from '../../../core/services/admin.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 
 @Component({
-    selector: 'app-admin-user-list',
-    standalone: true,
-    imports: [CommonModule, MediaUrlPipe],
+  selector: 'app-admin-user-list',
+  standalone: true,
+  imports: [CommonModule, MediaUrlPipe, PaginationComponent],
     template: `
     <div class="admin-users-container">
       <div class="d-flex justify-content-between align-items-center mb-4">
@@ -30,7 +31,7 @@ import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let user of users">
+              <tr *ngFor="let user of paginatedUsers()">
                 <td class="ps-4 py-3">
                   <div class="d-flex align-items-center gap-3">
                     <img [src]="user.photo | mediaUrl" class="user-avatar" [alt]="user.firstName">
@@ -68,6 +69,13 @@ import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
             </tbody>
           </table>
         </div>
+        
+        <app-pagination 
+          [totalItems]="users.length" 
+          [pageSize]="pageSize" 
+          [currentPage]="currentPage"
+          (pageChanged)="onPageChange($event)">
+        </app-pagination>
       </div>
     </div>
   `,
@@ -103,6 +111,15 @@ export class AdminUserListComponent implements OnInit {
     private readonly toasts = inject(ToastService);
 
     users: AdminUser[] = [];
+    
+    // Pagination fields
+    pageSize = 10;
+    currentPage = 1;
+
+    paginatedUsers(): AdminUser[] {
+        const start = (this.currentPage - 1) * this.pageSize;
+        return this.users.slice(start, start + this.pageSize);
+    }
 
     ngOnInit() {
         this.loadUsers();
@@ -110,9 +127,16 @@ export class AdminUserListComponent implements OnInit {
 
     loadUsers() {
         this.adminService.getUsers().subscribe({
-            next: (users) => this.users = users,
+            next: (users) => {
+                this.users = users;
+                this.currentPage = 1;
+            },
             error: () => this.toasts.error('Failed to load users')
         });
+    }
+
+    onPageChange(page: number) {
+        this.currentPage = page;
     }
 
     getSellerStatusClass(status: string): string {

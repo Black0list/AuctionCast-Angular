@@ -42,38 +42,37 @@ export class ProfileComponent {
   });
 
   constructor(private readonly auth: AuthService) {
-    this.load();
+    this.auth.user$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((me) => {
+      this.me = me;
+      if (me) {
+        this.form.patchValue({
+          firstName: me.firstName ?? '',
+          lastName: me.lastName ?? '',
+          phone: me.phone ?? '',
+          addressLine1: me.addressLine1 ?? '',
+          addressLine2: me.addressLine2 ?? '',
+          city: me.city ?? '',
+          state: me.state ?? '',
+          postalCode: me.postalCode ?? '',
+          country: me.country ?? '',
+        });
+      }
+    });
+
+    if (!this.me) {
+      this.load();
+    }
   }
 
   load(): void {
     this.loading = true;
-
-    this.auth
-      .me()
-      .pipe(
-        tap((me) => {
-          this.me = me;
-          this.form.patchValue({
-            firstName: me.firstName ?? '',
-            lastName: me.lastName ?? '',
-            phone: me.phone ?? '',
-            addressLine1: me.addressLine1 ?? '',
-            addressLine2: me.addressLine2 ?? '',
-            city: me.city ?? '',
-            state: me.state ?? '',
-            postalCode: me.postalCode ?? '',
-            country: me.country ?? '',
-          });
-        }),
-        catchError((e) => {
-          this.toast.error(e?.error?.message ?? 'Failed to load profile');
-          return of(null);
-        }),
-        takeUntilDestroyed(this.destroyRef)
-      )
-      .subscribe(() => {
+    this.auth.me().subscribe({
+      next: () => (this.loading = false),
+      error: (e) => {
+        this.toast.error(e?.error?.message ?? 'Failed to load profile');
         this.loading = false;
-      });
+      },
+    });
   }
 
   onFileChange(event: Event): void {
@@ -110,10 +109,9 @@ export class ProfileComponent {
         photo: this.selectedPhoto,
       })
       .subscribe({
-        next: (updated) => {
+        next: () => {
           this.saving = false;
           this.toast.success('Profile updated successfully');
-          this.me = updated;
           this.selectedPhoto = null;
           this.previewUrl = null;
         },
@@ -130,7 +128,6 @@ export class ProfileComponent {
     this.auth.applySeller().subscribe({
       next: () => {
         this.toast.success('Seller application submitted successfully!');
-        this.load();
       },
       error: (e) => {
         this.toast.error(e?.error?.message ?? 'Failed to apply');

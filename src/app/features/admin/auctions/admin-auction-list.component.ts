@@ -4,11 +4,12 @@ import { AdminService } from '../../../core/services/admin.service';
 import { AuctionResponse, AuctionStatus } from '../../../core/models/auction.models';
 import { ToastService } from '../../../core/services/toast.service';
 import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 
 @Component({
-    selector: 'app-admin-auction-list',
-    standalone: true,
-    imports: [CommonModule, MediaUrlPipe],
+  selector: 'app-admin-auction-list',
+  standalone: true,
+  imports: [CommonModule, MediaUrlPipe, PaginationComponent],
     template: `
     <div class="admin-auctions-container">
       <div class="d-flex justify-content-between align-items-center mb-4">
@@ -36,12 +37,12 @@ import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let auction of filteredAuctions">
+              <tr *ngFor="let auction of paginatedAuctions">
                 <td class="ps-4 py-3">
                   <div class="d-flex align-items-center gap-3">
-                    <img [src]="getCoverImage(auction) | mediaUrl" class="product-thumb" alt="thumb">
+                    <img [src]="getCoverImage(auction.product) | mediaUrl" class="product-thumb" alt="thumb">
                     <div>
-                      <div class="fw-bold text-truncate" style="max-width: 250px;">{{ auction.product.title }}</div>
+                      <div class="fw-bold text-truncate" style="max-width: 250px;">{{ auction.product?.title || 'Deleted Product' }}</div>
                       <div class="text-secondary x-small">ID: {{ auction.id.substring(0, 8) }}...</div>
                     </div>
                   </div>
@@ -79,6 +80,13 @@ import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
             </tbody>
           </table>
         </div>
+
+        <app-pagination
+          [totalItems]="filteredAuctions.length"
+          [pageSize]="pageSize"
+          [currentPage]="currentPage"
+          (pageChanged)="onPageChange($event)">
+        </app-pagination>
       </div>
     </div>
   `,
@@ -142,6 +150,15 @@ export class AdminAuctionListComponent implements OnInit {
     filteredAuctions: AuctionResponse[] = [];
     searchTerm = '';
 
+    // Pagination fields
+    pageSize = 10;
+    currentPage = 1;
+
+    get paginatedAuctions(): AuctionResponse[] {
+        const start = (this.currentPage - 1) * this.pageSize;
+        return this.filteredAuctions.slice(start, start + this.pageSize);
+    }
+
     ngOnInit() {
         this.loadAuctions();
     }
@@ -156,8 +173,13 @@ export class AdminAuctionListComponent implements OnInit {
         });
     }
 
-    getCoverImage(auction: AuctionResponse): string {
-        return auction.product.imageUrls?.find(img => img.cover)?.imageUrl || 'assets/placeholder.png';
+    getCoverImage(product: any): string {
+        if (!product) return 'assets/placeholder.png';
+        if (product.coverImage) return product.coverImage;
+        if (product.imageUrls && product.imageUrls.length > 0) {
+            return product.imageUrls[0].imageUrl;
+        }
+        return 'assets/placeholder.png';
     }
 
     getSellerName(auction: AuctionResponse): string {
@@ -168,12 +190,17 @@ export class AdminAuctionListComponent implements OnInit {
 
     onSearch(event: Event) {
         this.searchTerm = (event.target as HTMLInputElement).value.toLowerCase();
+        this.currentPage = 1; // Reset to first page on search
         this.applyFilter();
+    }
+
+    onPageChange(page: number) {
+        this.currentPage = page;
     }
 
     applyFilter() {
         this.filteredAuctions = this.auctions.filter(a =>
-            a.product.title.toLowerCase().includes(this.searchTerm) ||
+            (a.product?.title?.toLowerCase() || 'deleted product').includes(this.searchTerm) ||
             this.getSellerName(a).toLowerCase().includes(this.searchTerm) ||
             a.status.toLowerCase().includes(this.searchTerm)
         );

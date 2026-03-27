@@ -61,10 +61,15 @@ export class AuthInterceptor implements HttpInterceptor {
           }),
           catchError((err) => {
             this.isRefreshing = false;
+            this.refreshTokenSubject.next(null);
             this.authService.logout();
             return throwError(() => err);
           })
         );
+      } else {
+        this.isRefreshing = false;
+        this.authService.logout();
+        return throwError(() => new Error('Refresh token not available'));
       }
     }
 

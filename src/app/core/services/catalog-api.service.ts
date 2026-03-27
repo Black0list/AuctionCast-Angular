@@ -44,6 +44,23 @@ export class CatalogApiService {
         return this.http.get<ApiResponse<any[]>>(`${this.baseUrl}/categories/active`);
     }
 
+    getCategories(): Observable<ApiResponse<any[]>> {
+        return this.http.get<ApiResponse<any[]>>(`${this.baseUrl}/categories`);
+    }
+
+    createCategory(data: any): Observable<ApiResponse<any>> {
+        return this.http.post<ApiResponse<any>>(`${this.baseUrl}/categories`, data);
+    }
+
+    updateCategory(name: string, data: any): Observable<ApiResponse<any>> {
+        return this.http.put<ApiResponse<any>>(`${this.baseUrl}/categories/${name}`, data);
+    }
+
+    deleteCategory(name: string, hard = false): Observable<ApiResponse<string>> {
+        const params = new HttpParams().set('hard', hard.toString());
+        return this.http.delete<ApiResponse<string>>(`${this.baseUrl}/categories/${name}`, { params });
+    }
+
     isProductOwner(productId: string, userId: string): Observable<ApiResponse<boolean>> {
         return this.http.get<ApiResponse<boolean>>(`${this.baseUrl}/products/${productId}/isProductOwner/${userId}`);
     }
